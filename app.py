@@ -2,6 +2,10 @@ from flask import Flask
 from .routes.totem import totem
 from .routes.atendente import atendente
 from .routes.painel import painel
+from .database.db import ServicoBancoDeDados
+
+# Inicialização do banco de dados da aplicação
+conn = ServicoBancoDeDados.getInstancia()
 
 # Inicializa objeto da aplicacao
 app = Flask(__name__)

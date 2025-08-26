@@ -1,0 +1,69 @@
+
+/*-------------Totem do usuario-------------*/
+:root { 
+      --bg: #e8f5e9;        /* verde bem claro */
+      --card: #ffffff;      /* branco puro */
+      --muted: #1b5e20;     /* verde escuro para textos secundários */
+      --text: #145a32;      /* verde mais escuro para textos principais */
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body { 
+      background: linear-gradient(120deg, #e8f5e9 70%, #c8e6c9 100%);
+      color: var(--text); 
+      font-family: 'Segoe UI', Tahoma, sans-serif; 
+    }
+    .wrap { min-height: 100vh; display: flex; flex-direction: column; }
+    header { padding: 20px; text-align: center; border-bottom: 2px solid rgba(255,255,255,0.1); }
+    header h1 { margin: 0; font-size: clamp(22px, 3vw, 36px); }
+    header p { margin: 4px 0 0; color: var(--muted); }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      /* NOVO: reduz espaço vertical */
+      gap: 16px;
+    }
+    main h2 {
+      margin-bottom: 16px; /* Aproxima do grid */
+      font-size: clamp(20px, 2.5vw, 28px);
+    }
+    .grid {
+      display: flex;                /* Troca grid por flex */
+      flex-direction: column;       /* Um botão em cima do outro */
+      gap: 24px;                    /* Espaço entre botões */
+      width: 100%;
+      max-width: 340px;             /* Limita largura para enquadrar */
+      align-items: stretch;         /* Botões ocupam toda largura */
+    }
+    .btn { border: none; border-radius: 20px; padding: 40px 20px; font-size: clamp(22px, 3vw, 32px); font-weight: bold; color: #0b1020; cursor: pointer; transition: transform .08s ease, box-shadow .2s ease; }
+    .btn:active { transform: scale(.97); }
+    .normal { background: #43a047; color: #fff; }        /* verde forte */
+    .preferencial { background: #388e3c; color: #fff; }  /* verde escuro */
+    footer { text-align: center; padding: 12px; font-size: 14px; color: var(--muted); border-top: 2px solid rgba(255,255,255,0.1); }
+    
+    /* Modal */
+    .ticket-modal { position: fixed; inset: 0; display: none; place-items: center; background: rgba(0,0,0,.55); z-index: 1000; }
+    .ticket-card { background: white; color: #145a32; border-radius: 20px; padding: 32px; text-align: center; animation: pop .25s ease; }
+    .ticket-card h2 { margin: 0 0 12px; font-size: 32px; }
+    .ticket-code { font-size: 78px; font-weight: 900; margin: 12px 0; }
+    .ticket-info { color: #4b5563; font-size: 16px; }
+    .ticket-actions { margin-top: 20px; display:flex; gap:16px; justify-content:center; }
+    .ticket-actions button { padding: 12px 20px; font-weight: bold; border-radius: 12px; border: 0; cursor: pointer; }
+    .ok { background: #1b5e20; color: white; }
+    .print { background: #e8f5e9; color: #1b5e20; }
+    @keyframes pop { from { transform: scale(.85); opacity:.4; } to { transform: scale(1); opacity:1; } }
+
+    /* Impressão */
+    @media print {
+      body { background: white; }
+      header, main, footer, .ticket-modal { display: none !important; }
+      .print-ticket { display: block; padding: 16px; text-align: center; font-family: monospace; }
+      .print-ticket h1 { font-size: 20px; margin: 0 0 10px; }
+      .print-ticket .code { font-size: 48px; font-weight: 900; margin: 8px 0; }
+      .print-ticket .meta { font-size: 14px; }
+    }
+/*-------------Totem do usuario-------------*/

@@ -1,11 +1,46 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Totem</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Totem - Retirada de Senha</title>
+  <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
-    Aqui fica o totem
+  <div class="wrap">
+    <header>
+      <h1>Posto de Atendimento ao Contribuinte</h1>
+      <p>Retire sua senha</p>
+    </header>
+    <main>
+      <h2>Selecione o tipo de atendimento</h2>
+      <div class="grid">
+        <button class="btn normal" onclick="takeTicket('NORMAL')">Senha Normal</button>
+        <button class="btn preferencial" onclick="takeTicket('PREFERENCIAL')">Senha Preferencial</button>
+      </div>
+    </main> 
+
+    <footer>
+      Prefeitura Municipal - Totem de Atendimento
+    </footer>
+  </div>
+
+  <!-- Modal da senha -->
+  <div id="ticketModal" class="ticket-modal">
+    <div class="ticket-card">
+      <h2>Senha emitida</h2>
+      <div id="ticketCode" class="ticket-code">—</div>
+      <div id="ticketInfo" class="ticket-info"></div>
+      <div class="ticket-actions">
+        <button class="print" onclick="printTicket()">Imprimir</button>
+        <button class="ok" onclick="closeModal()">OK</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="/static/js.js"></script>
+
 </body>
+
 </html>

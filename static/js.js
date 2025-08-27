@@ -2,35 +2,23 @@
 /*-------------Totem do usuario-------------*/
 async function takeTicket(category){
       try {
-        const res = await fetch('/api/tickets', {
+        const res = await fetch('/totem/nova_senha', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ category })
+          body: JSON.stringify({ "category": category})
         });
 
         if(!res.ok){
-          alert('Senha nao implementada!');
+          alert('Sistema não está respondendo, aguarde um momento');
           return;
         }
-        const t = await res.json();
-        const when = new Date(t.created_at);
-        const info = `${t.category} • Nº ${t.number} • ${when.toLocaleString()}`;
-        document.getElementById('ticketCode').textContent = t.code;
-        document.getElementById('ticketInfo').textContent = info;
-        document.getElementById('ticketModal').style.display = 'grid';
-        document.getElementById('printCode').textContent = t.code;
-        document.getElementById('printMeta').textContent = info;
-      } catch(e){ alert('Falha de conexão.'); }
-    }
 
-    function closeModal(){
-      document.getElementById('ticketModal').style.display = 'none';
-    }
+        const data = await res.json();
+        console.log("Senha gerada: ", data.senha);
 
-    function printTicket(){
-      const area = document.getElementById('printArea');
-      area.style.display = 'block';
-      window.print();
-      setTimeout(() => area.style.display = 'none', 100);
-    }
+      }catch (err)
+      {
+        console.error("Erro: ", err);
+      }
+}
 /*-------------Totem do usuario-------------*/

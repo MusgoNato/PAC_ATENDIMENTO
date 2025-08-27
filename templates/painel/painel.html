@@ -1,11 +1,107 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 50px;
+    }
+
+    /* Texto rolando fora da caixa */
+    .faixa {
+      width: 100%;
+      overflow: hidden;
+      border-bottom: 1px solid black;
+      margin-bottom: 20px; /* espaço entre faixa e painel */
+      position: relative;
+      height: 30px;
+    }
+
+    .texto-rolando {
+      white-space: nowrap;
+      font-size: 1.5em;
+      font-weight: bold;
+      justify-content: center;
+      align-items: center;
+      color: #070707;
+      animation: mover 15s linear infinite;
+    }
+
+    @keyframes mover {
+      from {
+        transform: translateX(-100%);
+      }
+      to {
+        transform: translateX(100%);
+      }
+    }
+
+    .painel {
+      display: grid;
+      grid-template-areas:
+        "topo topo topo"
+        "esq meio dir";
+      grid-gap: 70px;
+      justify-items: center;
+      align-items: center;
+    }
+
+    .painel > div {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2em;
+      font-weight: bold;
+      color: #388e3c;
+    }
+
+    .topo {
+      grid-area: topo;
+      width: 500px;
+      height: 300px;
+      border: 3px solid black;
+    }
+
+    .esq {
+      grid-area: esq;
+      width: 320px;
+      height: 220px;
+      border: 3px solid black;
+    }
+
+    .meio {
+      grid-area: meio;
+      width: 320px;
+      height: 220px;
+      border: 3px solid black;
+    }
+
+    .dir {
+      grid-area: dir;
+      width: 320px;
+      height: 220px;
+      border: 3px solid black;
+    }
+  </style>
 </head>
 <body>
-    Aqui fica o painel com as senhas
+  <!-- Texto rolando fora da caixa -->
+  <div class="faixa">
+    <div class="texto-rolando">Sua senha será chamada em instantes!</div>
+  </div>
+
+  <div class="painel">
+    <div class="topo">SENHA</div>
+    <div class="esq">GUICHÊ 1</div>
+    <div class="meio">GUICHÊ 2</div>
+    <div class="dir">GUICHÊ 3</div>
+  </div>
 </body>
 </html>
+
+

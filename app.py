@@ -7,11 +7,14 @@ from dotenv import load_dotenv
 from os import getenv
 
 # Carregamento das variaveis de ambiente
-# load_dotenv()
-# host, user, password, database = getenv("HOST"), getenv("USER"), getenv("PASSWORD"), getenv("DATABASE")
+load_dotenv()
+host, user, password, database = getenv("HOST"), getenv("USER"), getenv("PASSWORD"), getenv("DATABASE")
 
 # Inicialização do banco de dados da aplicação
-# conn = ServicoBancoDeDados.getInstancia()
+try:
+    conn = ServicoBancoDeDados(host, user, password, database)
+except Exception as e:
+    raise Exception(f"Não foi possível inicializar a aplicação {e}")
 
 # Inicializa objeto da aplicacao
 app = Flask(__name__)

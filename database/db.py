@@ -5,13 +5,13 @@ class ServicoBancoDeDados():
     
     __instancia = None
     
-    def __init__(self):
+    def __init__(self, host, user, password, database="riobrilhantems_dev_pac"):
         """Construtor do servico de banco de dados ad aplicacao"""
         self.conn = pymysql.connect(
-            host="",
-            user="",
-            password="",
-        database="",
+            host=host,
+            user=user,
+            password=password,
+        database=database,
         cursorclass=pymysql.cursors.DictCursor
         )
         self.cursor = self.conn.cursor()

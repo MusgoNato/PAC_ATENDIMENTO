@@ -16,12 +16,12 @@ Projeto desenvolvido para atendimento no setor público PAC.
 - [Licença](#-licença)  
 - [Contribuidores](#contribuidores)
 
----
+
 
 ## 📋 Sobre
 O projeto consiste em agilizar o atendimento do setor público PAC, gerando senhas aleatórias para cada guichê, organizando o atendimento ao cliente. 
 
----
+
 
 ## 📁 Estrutura do Projeto
 ```
@@ -40,7 +40,7 @@ Principais tecnologias utilizadas no projeto:
 
 - [Python](https://www.python.org/)  
 
----
+
 
 ## ⚙️ Pré-requisitos
 Informe o que o usuário precisa ter instalado antes de rodar o projeto:
@@ -49,7 +49,36 @@ Informe o que o usuário precisa ter instalado antes de rodar o projeto:
 - [Python 3+](https://www.python.org/) 
 - [pip](https://pypi.org/project/pip/) 
 
----
+
+
+## Passo a passo 🕹️
+Para desenvolvedores:
+```bash
+# Verifique em qual branch está
+git status
+
+# Caso esteja em uma branch diferente, troque para a correta
+git checkout nome_da_sua_branch
+
+# Atualize o seu repositório local caso esteja diferente do repositório em nuvem (Github).
+# Obs: git pull é comum usar se alguém mexeu na sua branch e subiu essas alterações no repositório em nuvem (Github). Logo, se ninguém alterou nada, não é necessário o comando e você continua seu trabalho de onde parou em sua branch.
+git pull
+
+# Commite a alteração do seu código
+# Obs: O tipo do commit 1 e 2 é um padrão, esse mesmo padrão você pode encontrar no site https://dev.to/renatoadorno/padroes-de-commits-commit-patterns-41co. Cada commit deve ser claro, se caso você alterou muita coisa no código e não consegue deixar de forma concisa, utilize o commit do tipo 2.
+
+# Commit somente título da mensagem
+1 - git commit -m ":sparkles: feat: Funcionalidade gerar senha adicionada"
+
+# Commit título e corpo da mensagem 
+2 - git commit -m ":sparkles: feat: Funcionalidade gerar senha adicionada" -m "Refeito estilização totem; Adicionado funcionalidade gerenciar atendente; Configuração de arquivos de estilização"
+
+# ATENÇÃO (git push)
+# Somente use o comando caso já finalizou algo. Ex: botão de chamar senha, estilizar cabeçalho, funcionalidade de criar usuario, etc.
+git push
+
+
+```
 
 ## 🚀 Instalação
 

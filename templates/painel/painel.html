@@ -10,6 +10,9 @@
       flex-direction: column;
       align-items: center;
       margin: 50px;
+      background: linear-gradient(120deg, #e8f5e9 70%, #c8e6c9 100%);
+      color: var(--text); 
+      font-family: 'Segoe UI', Tahoma, sans-serif; 
     }
 
     /* Texto rolando fora da caixa */
@@ -52,12 +55,14 @@
     }
 
     .painel > div {
+      border-radius: 20px;
       display: flex;
+      flex-direction: column;
+      font-weight: bold;
+      color: #fefffe;
+      text-align: center;
       justify-content: center;
       align-items: center;
-      font-size: 2em;
-      font-weight: bold;
-      color: #388e3c;
     }
 
     .topo {
@@ -65,43 +70,79 @@
       width: 500px;
       height: 300px;
       border: 3px solid black;
+      font-size: 5.5em;
+      background: linear-gradient(120deg, #43a047 100%, #81c784 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    .esq {
-      grid-area: esq;
+    .guiche {
       width: 320px;
       height: 220px;
       border: 3px solid black;
+      font-size: 1.2em;
+      background: linear-gradient(120deg, #43a047 100%, #81c784 100%);
+      position: relative;
     }
 
-    .meio {
-      grid-area: meio;
-      width: 320px;
-      height: 220px;
-      border: 3px solid black;
+    .titulo {
+      position: absolute;
+      top: 10px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 1.2em;
     }
 
-    .dir {
-      grid-area: dir;
-      width: 320px;
-      height: 220px;
-      border: 3px solid black;
+    .conteudo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.5em;
+    }
+    .fade-out {
+      animation: fadeOut 0.7s forwards;
+    }
+    .fade-in {
+      animation: fadeIn 0.7s;
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   </style>
 </head>
 <body>
   <!-- Texto rolando fora da caixa -->
   <div class="faixa">
-    <div class="texto-rolando">Sua senha será chamada em instantes!</div>
+    <div class="texto-rolando">PAC - Sua senha será chamada em instantes!</div>
   </div>
 
   <div class="painel">
-    <div class="topo">SENHA</div>
-    <div class="esq">GUICHÊ 1</div>
-    <div class="meio">GUICHÊ 2</div>
-    <div class="dir">GUICHÊ 3</div>
+  <div class="topo" id="painel-topo"><span id="topo-texto">P234</span></div>
+
+    <div class="guiche esq">
+      <div class="titulo">GUICHÊ 1</div>
+      <div class="conteudo" id="guiche1-conteudo">101</div>
+    </div>
+
+    <div class="guiche meio">
+      <div class="titulo">GUICHÊ 2</div>
+      <div class="conteudo">202</div>
+    </div>
+
+    <div class="guiche dir">
+      <div class="titulo">GUICHÊ 3</div>
+      <div class="conteudo">303</div>
+    </div>
   </div>
+  <script src="/static/js.js"></script>
 </body>
 </html>
-
 

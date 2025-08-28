@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, jsonify, request
+import random
 
 # Ao incluir o prefixo, nao e necessario especificar o nome da rota
 totem = Blueprint("totem", __name__, url_prefix="/totem")
@@ -8,7 +9,10 @@ class ServicoTotem():
         """
         Contrutor do servico Painel
         """
-        pass
+        self.resultados = {
+            "P": set(),
+            "N": set(),
+        }
 
     def apresentacaoPainel(self):
         """
@@ -16,13 +20,19 @@ class ServicoTotem():
         """
         pass
 
-    def get_NovaSenha(self, tipo):
+    def get_NovaSenha(self, tipo: str) -> str:
         """Funcao para gerar ticket"""
+        tipo = (tipo or "").upper()
+
         match tipo:
             case "N":
                 return "N"
             case "P":
-                return "P"
+                while True:
+                    senhaP = random.randint(1, 999)
+                    if senhaP not in self.resultados["P"]:
+                        self.resultados["P"].add(senhaP)
+                        return f"P{senhaP:03}"
             case _:
                 return "DESCONHECIDO"
 

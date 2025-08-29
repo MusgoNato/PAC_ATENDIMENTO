@@ -1,11 +1,92 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atendente</title>
+  <meta charset="UTF-8">
+  <title>Atendente</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2fdfd;
+      color: #003f3f;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      background: #078282;
+      color: #c3ffff;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      max-width: 500px;
+      margin: auto;
+    }
+    li {
+      background: #078282;
+      color: #c3ffff;
+      padding: 16px;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    button {
+      background: #0ABAB5;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    Aqui fica o atendente
+  <h1>Lista de Senhas</h1>
+  <ul id="lista-senhas"></ul>
+
+  <script>
+    function carregarSenhas() {
+      fetch("/atendente/fila")
+        .then(res => res.json())
+        .then(data => {
+          const lista = document.getElementById("lista-senhas");
+          lista.innerHTML = "";
+          data.fila.forEach(senha => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+              <span>${senha}</span>
+              <button onclick="chamarSenha('${senha}')">Chamar</button>
+            `;
+            lista.appendChild(li);
+          });
+        })
+        .catch(err => console.error("Erro ao carregar senhas:", err));
+    }
+
+    function chamarSenha(senha) {
+      fetch("/atendente/chamar_senha", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ senha })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.chamada) {
+          alert("Senha chamada: " + data.chamada);
+          carregarSenhas();
+        } else {
+          alert("Erro ao chamar senha.");
+        }
+      })
+      .catch(err => console.error("Erro ao chamar senha:", err));
+    }
+
+    window.onload = carregarSenhas;
+    setInterval(carregarSenhas, 5000);
+  </script>
 </body>
 </html>

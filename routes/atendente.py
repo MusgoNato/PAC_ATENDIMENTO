@@ -1,35 +1,30 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, jsonify, request
+from routes.totem import servico_totem
 
-atendente = Blueprint("atendente", __name__)
+atendente = Blueprint("atendente", __name__, url_prefix="/atendente")
+ultima_senha_chamada = None
 
+@atendente.route("/")
+def atendente_home():
+    return render_template("atendente/atendente.html")
 
-class ServicoAtendente():
-    def __init__(self):
-        """
-        Contrutor do servico do atendente
-        """
-        pass
+@atendente.route("/fila")
+def fila_atual():
+    fila = servico_totem.fila_prioritaria + servico_totem.fila_normal
+    return jsonify({"fila": fila})
 
-    def atendimento_prox():
-        """
-        Proximo atendimento
-        """
-        pass
+@atendente.route("/chamar_senha", methods=["POST"])
+def chamar_senha_especifica():
+    global ultima_senha_chamada
+    data = request.get_json(silent=True) or {}
+    senha = data.get("senha")
 
-    def atendimento_ant():
-        """
-        Atendimento anterior
-        """
-        pass
-    
-    def move_cliente():
-        """
-        Move o cliente para outro guiche livre
-        """
+    if senha in servico_totem.fila_prioritaria:
+        servico_totem.fila_prioritaria.remove(senha)
+    elif senha in servico_totem.fila_normal:
+        servico_totem.fila_normal.remove(senha)
+    else:
+        return jsonify({"erro": "Senha não encontrada"})
 
-
-# Home do atendente (Painel do atendente)
-@atendente.route("/atendente")
-def home():
-    return render_template("/atendente/atendente.html")
-
+    ultima_senha_chamada = senha
+    return jsonify({"chamada": senha})

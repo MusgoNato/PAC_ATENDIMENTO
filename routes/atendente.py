@@ -3,7 +3,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 from ..models.user import User
 from ..database.db import ServicoBancoDeDados
 
-atendente = Blueprint("atendente", __name__)
+atendente = Blueprint("atendente", __name__, url_prefix="/atendente")
 
 class ServicoAtendente():
     def __init__(self):
@@ -15,8 +15,11 @@ class ServicoAtendente():
 # Home do atendente (Painel do atendente)
 @atendente.route("/login", methods=["GET", "POST"])
 def login():    
+    if current_user.is_authenticated:
+        return redirect(url_for("atendente.home"))
+    
     if request.method == "POST":
-        
+
         nome = request.form.get("username")
         senha = request.form.get("password")
         
@@ -42,6 +45,13 @@ def login():
 
     # Qualquer tipo que difere de POST cai na renderização da propria pagina novamente
     return render_template("atendente/login.html")
+
+
+@atendente.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("atendente.login"))
 
 # Pagina do atendente apos logado
 @atendente.route("/home", methods=["GET"])

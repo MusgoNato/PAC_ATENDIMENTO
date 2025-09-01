@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Atendimento</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="headerAtendente">
+        <h1>Sistema de Atendimento <p>Guichê {{nome_guiche}}</p></h1>
+        <div class="headerAtendente-info">
+            <span id="current-time">--:--:--</span>
+            <span>Fila: <strong id="queue-count">0</strong></span>
+        </div>
+    </header>
+
+    <!-- Container de chamada -->
+    <div class="container">
+        <div class="card">
+            <div id="current-customer" class="current-customer">
+                <div class="empty-state">
+                    <h3>Nenhum cliente em atendimento</h3>
+                    <p>Chame o próximo da fila para iniciar</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filas -->
+        <div class="cardFilaAtendimento">
+            <h3 align="center">Filas de Atendimento</h3>
+            <div class="fila-container">
+                <div id="fila-prioritarios">
+                    <h3 align="center">Prioritários</h3>
+                    <div class="fila-lista"></div>
+                    <!-- Os dados sao populados pelo arquivo atendente.js -->
+                </div>
+                <div id="fila-normais">
+                    <h3 align="center">Normal</h3>
+                    <div class="fila-lista"></div>
+                    <!-- Os dados sao populados pelo arquivo atendente.js -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/atendente.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bem-vindo à Fila de Atendimento - Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="wrap">
+        <header>
+            <h1>Posto de Atendimento ao Contribuinte</h1>
+            <p>Login do Atendente</p>
+        </header>
+        <main>
+            <form class="login-form" method="POST" action="{{ url_for('atendente.login') }}">
+                <input type="text" name="username" class="form-input" placeholder="Usuário" required>
+                <input type="password" name="password" class="form-input" placeholder="Senha" required>
+                <button type="submit" class="btn-login">Entrar</button>
+                {% if error %}
+                    <div class="error-message">{{ error }}</div>
+                {% endif %}
+            </form>
+        </main>
+        <footer>
+            Prefeitura Municipal - Sistema de Atendimento
+        </footer>
+    </div>
+</body>
+</html>

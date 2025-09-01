@@ -4,7 +4,7 @@
       --bg: #e8f5e9;        /* verde bem claro */
       --card: #ffffff;      /* branco puro */
       --muted: #1b5e20;     /* verde escuro para textos secundários */
-      --text: #145a32;      /* verde mais escuro para textos principais */
+      --text: #145a32;      /* verde mais escuro para textos principais*/ 
     }
     * { box-sizing: border-box; }
     html, body { height: 100%; margin: 0; }
@@ -28,20 +28,20 @@
       gap: 16px;
     }
     main h2 {
-      margin-bottom: 16px; /* Aproxima do grid */
+      margin-bottom: 16px; /* Aproxima do grid*/ 
       font-size: clamp(20px, 2.5vw, 28px);
     }
     .grid {
-      display: flex;                /* Troca grid por flex */
-      flex-direction: column;       /* Um botão em cima do outro */
+      display: flex;                /* Troca grid por flex*/ 
+      flex-direction: column;       /* Um botão em cima do outro*/ 
       gap: 24px;                    /* Espaço entre botões */
       width: 100%;
-      max-width: 340px;             /* Limita largura para enquadrar */
-      align-items: stretch;         /* Botões ocupam toda largura */
+      max-width: 340px;             /* Limita largura para enquadrar*/ 
+      align-items: stretch;         /* Botões ocupam toda largura*/
     }
     .btn { border: none; border-radius: 20px; padding: 40px 20px; font-size: clamp(22px, 3vw, 32px); font-weight: bold; color: #0b1020; cursor: pointer; transition: transform .08s ease, box-shadow .2s ease; }
     .btn:active { transform: scale(.97); }
-    .normal { background: #43a047; color: #fff; }        /* verde forte */
+    .normal { background: #43a047; color: #fff; }        /* verde forte*/ 
     .preferencial { background: #388e3c; color: #fff; }  /* verde escuro */
     footer { text-align: center; padding: 12px; font-size: 14px; color: var(--muted); border-top: 2px solid rgba(255,255,255,0.1); }
     
@@ -57,7 +57,7 @@
     .print { background: #e8f5e9; color: #1b5e20; }
     @keyframes pop { from { transform: scale(.85); opacity:.4; } to { transform: scale(1); opacity:1; } }
 
-    /* Impressão */
+    /* Impressão*/ 
     @media print {
       body { background: white; }
       header, main, footer, .ticket-modal { display: none !important; }
@@ -67,3 +67,320 @@
       .print-ticket .meta { font-size: 14px; }
     }
 /*-------------Totem do usuario-------------*/
+
+
+/*-------------Interface atendente-------------*/
+.headerAtendente {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1rem 2rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerAtendente h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.headerAtendente-info {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding-top: 10px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+}
+
+.cardFilaAtendimento {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2rem;
+  max-height: 500px;
+}
+
+.cardFilaAtendimento h3 {
+  margin: 0 0 15px;
+  font-size: 1.5em;
+  color: #333;
+}
+
+.fila-container {
+  display: flex;
+  gap: 20px;
+}
+
+.fila-lista {
+    max-height: 300px;
+    overflow-y: auto; 
+    padding-right: 15px;
+}
+
+.fila h3 {
+  margin: 0 0 10px;
+  font-size: 1.2em;
+  color: #007bff;
+}
+
+.current-customer {
+  text-align: center;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.current-customer.active {
+  background: linear-gradient(135deg, #2ecc71, #2ecc71);
+  color: white;
+  border-radius: 12px;
+}
+
+.customer-info {
+  margin: 1rem 0;
+}
+
+.customer-number {
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+.queue-list {
+  flex: 1;
+  max-height: 200px;
+  overflow-y: auto;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+}
+
+.queue-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  margin-bottom: 8px;
+  background: #f0f0f0;
+  border-radius: 6px;
+}
+
+.queue-item.priority {
+  border-left-color: #e74c3c;
+}
+
+.next-customer {
+  background: rgba(102, 126, 234, 0.1);
+  border: 2px solid #667eea;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+}
+
+.empty-state {
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+}
+
+.badge {
+  background: #e74c3c;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.badge-normal {
+  background: #27ae60;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.container-botoes-atendimento {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.funcao-btn-atendimento {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+
+  .headerAtendente {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+}
+/*-------------Interface atendente-------------*/
+
+
+
+/*------------Login atendente------------*/
+/* Container for the entire login page */
+.login-container {
+    max-width: 400px;
+    width: 100%;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Header styling */
+.header {
+    margin-bottom: 20px;
+}
+
+.header-title {
+    margin: 0;
+    font-size: 1.8em;
+    color: #333;
+    font-weight: bold;
+}
+
+.header-subtitle {
+    color: #666;
+    font-size: 1em;
+    margin: 5px 0 0;
+}
+
+/* Form styling */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+/* Input fields */
+.form-input {
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.btn-login{
+ padding: 8px 16px;        /* menos altura e largura */
+    font-size: 1rem;           /* tamanho de fonte menor */
+    border-radius: 6px;        /* bordas levemente arredondadas */
+    background: linear-gradient(135deg, #1b5e20, #27ae60);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-login:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(7, 167, 116, 0.3);
+}
+
+
+.form-input:focus {
+    border-color: #00796b;
+    box-shadow: 0 0 5px rgba(0, 121, 107, 0.3);
+}
+
+/* Submit button */
+.form-button {
+    padding: 10px;
+    font-size: 1.1em;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.form-button:hover {
+    background-color: #45a049;
+}
+
+/* Error message */
+.error-message {
+    color: #e53e3e;
+    font-size: 0.9em;
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* Footer styling */
+.footer {
+    margin-top: 20px;
+    color: #666;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+    .login-container {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    .header-title {
+        font-size: 1.5em;
+    }
+
+    .login-form {
+        max-width: 100%;
+    }
+}
+/*------------Login atendente------------*/

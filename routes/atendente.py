@@ -1,7 +1,7 @@
 from flask import request, redirect, url_for, render_template, Blueprint, session
 from flask_login import login_user, login_required, logout_user, current_user
-from ..models.user import User
-from ..database.db import ServicoBancoDeDados
+from models.user import User
+from database.db import ServicoBancoDeDados
 
 atendente = Blueprint("atendente", __name__, url_prefix="/atendente")
 

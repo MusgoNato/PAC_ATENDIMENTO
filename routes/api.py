@@ -1,6 +1,7 @@
-from flask import Blueprint, jsonify, session
+from flask import Blueprint, jsonify, session, request
 from flask_login import login_required, current_user
-from ..database.db import ServicoBancoDeDados
+from database.db import ServicoBancoDeDados
+
 
 api = Blueprint("api", __name__)
 
@@ -54,15 +55,20 @@ def del_cliente(ticket_id):
     try:
         db = ServicoBancoDeDados.getInstancia()
         cursor = db.cursor
-        cursor.execute("UPDATE tickets SET status = 'FINALIZADO' WHERE id = %s", ticket_id)
+
+        #Cria acao para definir se é uma finalização ou remoção, e status para modificar o valor no banco
+        acao = (request.args.get("acao") or "finalizar").lower()
+        status = "REMOVIDO" if acao == "remover" else "FINALIZADO"
+
+        cursor.execute("UPDATE tickets SET status = %s WHERE id = %s", (status, ticket_id))
         db.conn.commit()
 
-        return jsonify({"message" : f"ticket {ticket_id} finalizado com sucesso."}, 200)
-    
+        #Mensagem e tratamento de erro
+        msg = "removido" if status == "REMOVIDO" else "finalizado"
+        return jsonify({"message": f"ticket {ticket_id} {msg} com sucesso."}), 200
     except Exception as e:
         print(f"Falha ao deletar cliente : {e}")
-        return jsonify({"error": "Falha ao deletar cliente"}, 500)
-
+        return jsonify({"error": "Falha ao deletar cliente"}), 500
 
 @api.route("/api/v1/fila/em-atendimento", methods=["GET"])
 @login_required

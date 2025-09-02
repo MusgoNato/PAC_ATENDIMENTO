@@ -21,9 +21,9 @@ async function fetchQueue() {
 }
 
 // Deleta um cliente
-async function del_client(ticket_id) {
+async function del_client(ticket_id, action = 'finalizar') {
     try{
-        const response = await fetch(`/api/v1/fila/${ticket_id}`, {method: 'DELETE'});
+        const response = await fetch(`/api/v1/fila/${ticket_id}?acao=${action}`, {method: 'DELETE'});
         if (!response){
             throw new Error(`Erro de rede ao remover cliente : ${ticket_id}`)
         }
@@ -172,7 +172,9 @@ function removerClienteDaFila(id_cliente, senha_cliente) {
         
         // Remove do array principal
         queue = queue.filter(c => c.id !== id_cliente);
-        del_client(id_cliente);
+
+        // Agora passa a acao na funcao del_client para diferenciar remoção de finalização, nesse caso `remover`
+        del_client(id_cliente, 'remover');
         alert(`Cliente removido: ID: ${id_cliente}, SENHA: ${senha_cliente}`);
         atualizarContagemDaFila();
         renderizarFilas();
@@ -185,7 +187,9 @@ function finalizarAtendimento() {
     
     if(confirm("Deseja finalizar o atendimento?")){
         alert(`Atendimento de ${currentCustomer.numero} finalizado com sucesso`);
-        del_client(currentCustomer.id);
+
+        // Agora passa a acao na funcao del_client para diferenciar remoção de finalização, nesse caso `finalizar`
+        del_client(currentCustomer.id, 'finalizar');
 
         currentCustomer = null;
 
@@ -196,8 +200,6 @@ function finalizarAtendimento() {
     else{
         return;
     }
-
-    
 }
 
 // Renderiza todas as filas

@@ -1,18 +1,20 @@
 from flask import Flask
 from flask_socketio import SocketIO
-from .routes.totem import totem
-from .routes.atendente import atendente
-from .routes.painel import painel
-from .routes.api import api
-from .database.db import ServicoBancoDeDados
+from routes.totem import totem
+from routes.atendente import atendente
+from routes.painel import painel
+from routes.api import api
+from database.db import ServicoBancoDeDados
 from dotenv import load_dotenv
 from os import getenv
 from flask_login import LoginManager
-from .models.user import User
+from models.user import User
 
 # Carregamento das variaveis de ambiente
 load_dotenv()
-host, user, password, database, key_secret = getenv("HOST"), getenv("USER"), getenv("PASSWORD"), getenv("DATABASE"), getenv("KEY_SECRET")
+host, user, password, database, key_secret = getenv("HOST"), getenv("DB_USER"), getenv("PASSWORD"), getenv("DATABASE"), getenv("KEY_SECRET")
+
+print(host, user, password, database, key_secret)
 
 # Inicialização do banco de dados da aplicação
 try:

@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, jsonify, request
-from ..database.db import ServicoBancoDeDados
+from database.db import ServicoBancoDeDados
 
 # Ao incluir o prefixo, nao e necessario especificar o nome da rota
 totem = Blueprint("totem", __name__, url_prefix="/totem")

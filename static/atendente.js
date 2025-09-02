@@ -1,20 +1,23 @@
 /*------------------Atendente------------------*/
+const socket = io('http://127.0.0.1:4000');
+
 let queue = [];
 
 let currentCustomer = null;
+
+const API_URL_FLASK = 'http://127.0.0.1:5000/api/v1/fila';
+const API_URL_NODE = 'http://127.0.0.1:4000/api';
 
 // Funcoes assincronas para a API
 
 // Retorna a fila completa em espera
 async function fetchQueue() {
     try{
-        const response = await fetch('/api/v1/fila');
+        const response = await fetch(API_URL_FLASK);
         if (!response.ok){
             throw new error(`Erro de rede: ${response.status}'`);
         }
         queue = await response.json()
-        atualizarContagemDaFila();
-        renderizarFilas();
     }catch (error){
         console.error("Falha ao requisitar a fila :", error);
     }
@@ -23,7 +26,7 @@ async function fetchQueue() {
 // Deleta um cliente
 async function del_client(ticket_id) {
     try{
-        const response = await fetch(`/api/v1/fila/${ticket_id}`, {method: 'DELETE'});
+        const response = await fetch(`${API_URL_NODE}/remover/${ticket_id}`, {method: 'POST'});
         if (!response){
             throw new Error(`Erro de rede ao remover cliente : ${ticket_id}`)
         }
@@ -36,7 +39,7 @@ async function del_client(ticket_id) {
 // Chamar o proximo da fila
 async function call_client(ticket_id) {
     try{
-        const response = await fetch(`/api/v1/fila/chamar/${ticket_id}`, {method: 'POST'});
+        const response = await fetch(`${API_URL_NODE}/chamar/${ticket_id}`, {method: 'POST'});
         if (!response){
             throw new Error(`Erro de rede ao chamar cliente : ${ticket_id}`)
         }
@@ -48,7 +51,7 @@ async function call_client(ticket_id) {
 
 async function verificar_cliente_em_atendimento() {
     try{
-        const response = await fetch('/api/v1/fila/em-atendimento');
+        const response = await fetch(`${API_URL_FLASK}/em-atendimento`);
         if (!response){
             throw new Error(`Erro de rede, nao foi possivel pegar o cliente em atendimento: ${response.status}`);
         }
@@ -197,7 +200,6 @@ function finalizarAtendimento() {
         return;
     }
 
-    
 }
 
 // Renderiza todas as filas
@@ -209,14 +211,26 @@ function renderizarFilas() {
 
 // Inicialização
 async function init() {
-    atualizarTempo();
-    setInterval(atualizarTempo, 1000);
 
     await verificar_cliente_em_atendimento();
     await fetchQueue();
     renderizarClienteEmAtendimento();
     renderizarFilas();
+
+    atualizarContagemDaFila();
+    atualizarTempo();
+    setInterval(atualizarTempo, 1000);
 }
+
+socket.on('fila_atualizada', async () =>{
+    console.log("Evento 'fila atualizada' recebido! Atualizando interface...");
+    await verificar_cliente_em_atendimento();
+    await fetchQueue();
+    renderizarClienteEmAtendimento();
+    renderizarFilas();
+    atualizarContagemDaFila();
+});
+
 
 init();
 /*------------------Fim Atendente------------------*/

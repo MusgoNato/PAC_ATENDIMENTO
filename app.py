@@ -32,13 +32,26 @@ login_manager.login_view = "atendente.login"
 
 @login_manager.user_loader
 def load_user(user_id):
-    db = ServicoBancoDeDados.getInstancia()
-    cursor = db.cursor
-    cursor.execute("SELECT * FROM guiches WHERE id=%s", (user_id,))
-    row = cursor.fetchone()
-    if row:
-        return User(id=row['id'], username=row['nome'])
-    return None
+    db_params = ServicoBancoDeDados._ServicoBancoDeDados__params
+    if not db_params:
+        return None # Parâmetros não definidos, não é possível conectar.
+
+    db = None
+    try:
+        db = ServicoBancoDeDados(*db_params)
+        cursor = db.cursor
+        cursor.execute("SELECT * FROM guiches WHERE id=%s", (user_id,))
+        row = cursor.fetchone()
+        
+        if row:
+            return User(id=row['id'], username=row['nome'])
+        return None
+    except Exception as e:
+        print(f"Erro ao carregar usuário: {e}")
+        return None
+    finally:
+        if db is not None:
+            db.conn.close()
 
 # Registro de blueprints
 

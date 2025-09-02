@@ -1,15 +1,33 @@
-from flask import Blueprint, render_template, jsonify, request
+from flask import Blueprint, render_template, g
 from ..database.db import ServicoBancoDeDados
 
 # Ao incluir o prefixo, nao e necessario especificar o nome da rota
 totem = Blueprint("totem", __name__, url_prefix="/totem")
 
+@totem.before_request
+def before_request():
+    """Cria uma nova conexao com o banco de dados para a requisição atual"""
+    try:
+        g.db = ServicoBancoDeDados(*ServicoBancoDeDados._ServicoBancoDeDados__params)
+        print("Conexao com o banco de dados aberta com sucesso!")
+    except Exception as e:
+        print(f"Erro ao conectar ao banco de dados {e}")
+        g.db = None
+
+@totem.teardown_request
+def teardown_request(exception=None):
+    """Fecha a requisição com o banco de dados após a requisição"""
+    db = g.pop("db", None)
+    if db is not None:
+        db.conn.close()
+        print("Conexao com o banco de dados fechada com sucesso.")
+
 class ServicoTotem():
-    def __init__(self):
+    def __init__(self, db_connection):
         """
         Conexao com o banco de dados (Single Ton)
         """
-        self.db = ServicoBancoDeDados.getInstancia()
+        self.db = db_connection
 
     def get_NovaSenha(self, tipo):
         cursor = self.db.cursor
@@ -51,19 +69,8 @@ class ServicoTotem():
             print(f"Erro ao inserir senha: {e}")
             return "Erro"
 
+
 # Home do usuario (Totem)
 @totem.route("/")
 def home():
     return render_template("/totem/totem.html")
-
-@totem.route("/nova_senha", methods=["POST"])
-def gerar_senha():
-    data = request.get_json()
-    tipo = data.get("category")
-    servico_totem = ServicoTotem()
-    senha_gerada = servico_totem.get_NovaSenha(tipo)
-
-    # Conexao com a impressora para sair a senha
-    #### ---- ####
-
-    return jsonify({"senha": senha_gerada})

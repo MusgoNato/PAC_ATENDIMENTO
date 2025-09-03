@@ -46,7 +46,6 @@ def login():
     # Qualquer tipo que difere de POST cai na renderização da propria pagina novamente
     return render_template("atendente/login.html")
 
-
 @atendente.route("/logout")
 @login_required
 def logout():

@@ -37,22 +37,47 @@ async function del_client(ticket_id) {
 }
 
 // Chamar o proximo da fila
-async function call_client(ticket_id) {
+async function call_client(clienteSelecionado) {
     try{
-        const response = await fetch(`${API_URL_NODE}/chamar/${ticket_id}`, {method: 'POST'});
-        if (!response){
+        const response = await fetch(`${API_URL_NODE}/chamar/${clienteSelecionado.id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                guiche_id: APP_DATA.guiche_id,
+                guiche_nome: APP_DATA.guiche_nome
+            })
+        });
+
+        // Verificacao do status da resposta da requisicao
+        if (!response.ok){
             throw new Error(`Erro de rede ao chamar cliente : ${ticket_id}`)
         }
-        const result = await response.json();
+
+        // Se a requisição correr bem, a mudança é feita na fila local
+        currentCustomer = clienteSelecionado;
+
+        queue = queue.filter(c => c.id !== clienteSelecionado);
+
+        // Renderizacao da interface novamente, pois a requisicao e atualizacao local foi feita com sucesso
+        renderizarClienteEmAtendimento();
+        renderizarFilas();
+        atualizarContagemDaFila();
+
+        // Chama o proximo cliente
+        alert(`CLiente ${clienteSelecionado.numero} chamado para atendimento!`);
     }catch (error){
         console.error("Falha ao chamar cliente: ", error);
+        alert("Falha ao chamar cliente. Tente novamente");
     }
 }
 
+// Envio diretamente para o flask
 async function verificar_cliente_em_atendimento() {
     try{
         const response = await fetch(`${API_URL_FLASK}/em-atendimento`);
-        if (!response){
+        if (!response.ok){
             throw new Error(`Erro de rede, nao foi possivel pegar o cliente em atendimento: ${response.status}`);
         }
 
@@ -154,18 +179,9 @@ function chamarCliente(tipoFila, index = 0) {
     const clienteSelecionado = fila[index];
 
     if (confirm(`Deseja atender ${clienteSelecionado.numero}?`)) {
-        // Remove o cliente da fila principal (queue)
-        queue = queue.filter(c => c.id !== clienteSelecionado.id);
+        // Somente chama a funcao responsavel pela modificacao local e remota da fila
+        call_client(clienteSelecionado)
 
-        currentCustomer = clienteSelecionado;
-        
-        call_client(currentCustomer.id)
-
-        alert(`${currentCustomer.numero} foi chamado para atendimento`);
-
-        atualizarContagemDaFila();
-        renderizarClienteEmAtendimento();
-        renderizarFilas();
     }
 }
 

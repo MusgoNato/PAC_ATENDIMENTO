@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, session, g, request
+from flask import Blueprint, jsonify, g, request
 from flask_login import login_required, current_user
 from ..database.db import ServicoBancoDeDados
 from ..routes.totem import ServicoTotem
@@ -61,12 +61,10 @@ def get_queue():
         filadb = cursor.fetchall()
         fila_formatada = []
 
-        for cliente in filadb:
-            fila_formatada.append({
-                'id': cliente['id'],
-                'numero': cliente['numero'],
-                'tipo': cliente['tipo']
-            })
+        fila_formatada = [
+            {'id': cliente['id'], 'numero': cliente['numero'], 'tipo': cliente['tipo']}
+            for cliente in filadb
+        ]
 
         return jsonify(fila_formatada)
     
@@ -80,20 +78,20 @@ def chamar_cliente(ticket_id):
     if g.db is None:
         return jsonify({"error": "Falha na conexao com o banco de dados"}), 500
     try:
+
+        # Atualizacao das informacoes do ticket pelo corpo da requisição recebida pela API server.js
         cursor = g.db.cursor
-        guiche_id = current_user.id
-        guiche_nome = session.get("nome_guiche", "NULL")
+        data = request.get_json()
+        guiche_id = data.get("guiche_id")
+        guiche_nome = data.get("guiche_nome")
         cursor.execute("UPDATE tickets SET status = 'CHAMADO', guiche_id = %s, guiche_nome = %s WHERE id = %s", (guiche_id, guiche_nome, ticket_id))
         g.db.conn.commit()
-
-        # Emite o evento ao websocket para refletir a todos os clientes a mudanca
-        # emitir_evento_websocket()
 
         return jsonify({"message" : f"ticket {ticket_id} chamado com sucesso."}), 200
     
     except Exception as e:
         print(f"Falha ao chamar cliente : {e}")
-        g.db.conn.roolback()
+        g.db.conn.rollback()
         return jsonify({"error": "Falha ao chamar cliente"}), 500
 
 
@@ -104,7 +102,6 @@ def del_cliente(ticket_id):
         print("Chegou na funcao para delear cliente")
         return jsonify({"error": "Chave API key inválida."}), 401
     
-
     if g.db is None:
         return jsonify({"error": "Falha na conexao com o banco de dados"}), 500
     try:
@@ -126,21 +123,22 @@ def get_cliente_em_atendimento():
     if g.db is None:
         return jsonify({"error": "Falha na conexao com o banco de dados!"}), 500
     try:
+        # Retorna id do guiche, no caso o atendente
+        guiche_id = current_user.id
+        if not guiche_id:
+            return jsonify({"error": "ID do guiche é necessario"}), 400
+        
         cursor = g.db.cursor
-        cursor.execute("SELECT id, numero, tipo FROM tickets WHERE status = 'CHAMADO' AND guiche_id = %s", (current_user.id))
+        cursor.execute("SELECT id, numero, tipo FROM tickets WHERE status = 'CHAMADO' AND guiche_id = %s", (guiche_id))
         ticket = cursor.fetchone()
 
         if ticket:
-            # Emite o evento ao websocket para refletir a todos os clientes a mudanca
-            # emitir_evento_websocket()
             return jsonify({
                 'id': ticket['id'],
                 'numero': ticket['numero'],
                 'tipo': ticket['tipo']
             }), 200
         else:
-            # Emite o evento ao websocket para refletir a todos os clientes a mudanca
-            # emitir_evento_websocket()
             return jsonify({"message" : f"Nenhum cliente em atendimento."}, 200)
 
     except Exception as e:
@@ -149,7 +147,6 @@ def get_cliente_em_atendimento():
 
 
 # ----------------Totem---------------- #
-
 @api.route("/api/v1/fila/nova_senha", methods=["POST"])
 def gerar_senha():
     if not validate_api_key():
@@ -161,9 +158,5 @@ def gerar_senha():
     tipo = data.get("category")
     servico_totem = ServicoTotem(g.db)
     senha_gerada = servico_totem.get_NovaSenha(tipo)
-
-    # Conexao com a impressora para sair a senha
-    ## ---- ####
-    # emitir_evento_websocket()
     
     return jsonify({"senha": senha_gerada}), 200

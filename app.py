@@ -1,5 +1,4 @@
 from flask import Flask
-from flask_socketio import SocketIO
 from .routes.totem import totem
 from .routes.atendente import atendente
 from .routes.painel import painel

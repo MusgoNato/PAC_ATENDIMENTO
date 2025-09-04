@@ -11,7 +11,7 @@ from .models.user import User
 
 # Carregamento das variaveis de ambiente
 load_dotenv()
-host, user, password, database, key_secret = getenv("HOST"), getenv("USER"), getenv("PASSWORD"), getenv("DATABASE"), getenv("KEY_SECRET")
+host, user, password, database, key_secret = getenv("HOST"), getenv("DB_USER"), getenv("PASSWORD"), getenv("DATABASE"), getenv("KEY_SECRET")
 
 # Inicialização do banco de dados da aplicação
 try:

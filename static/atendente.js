@@ -1,12 +1,8 @@
 /*------------------Atendente------------------*/
-const socket = io('http://127.0.0.1:4000');
+const socket = io(URL_WEBSOCKET);
 
 let queue = [];
-
 let currentCustomer = null;
-
-const API_URL_FLASK = 'http://127.0.0.1:5000/api/v1/fila';
-const API_URL_NODE = 'http://127.0.0.1:4000/api';
 
 // Funcoes assincronas para a API
 

@@ -1,11 +1,35 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel</title>
+  <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
 </head>
-<body>
-    Aqui fica o painel com as senhas
+<body class="bodyPainel">
+  <!-- Texto rolando fora da caixa -->
+  <div class="faixa">
+    <div class="texto-rolando">PAC - Sua senha será chamada em instantes!</div>
+  </div>
+
+  <div class="painel">
+  <div class="topo" id="painel-topo"><span id="topo-texto">P234</span></div>
+
+    <div class="guiche esq">
+      <div class="titulo">GUICHÊ 1</div>
+      <div class="conteudo" id="guiche1-conteudo">101</div>
+    </div>
+
+    <div class="guiche meio">
+      <div class="titulo">GUICHÊ 2</div>
+      <div class="conteudo">202</div>
+    </div>
+
+    <div class="guiche dir">
+      <div class="titulo">GUICHÊ 3</div>
+      <div class="conteudo">303</div>
+    </div>
+  </div>
+  <script src="{{url_for('static', filename='painel.js')}}"></script>
 </body>
 </html>

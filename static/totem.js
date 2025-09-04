@@ -1,7 +1,4 @@
 
-const API_URL_FLASK = 'http://127.0.0.1:5000/api/v1/fila';
-const API_URL_NODE = 'http://127.0.0.1:4000/api';
-
 /*-------------Totem do usuario-------------*/
 async function takeTicket(category){
       try {
@@ -18,7 +15,7 @@ async function takeTicket(category){
         }
 
         const data = await res.json();
-        console.error(`Data: ${data.senha}`);
+        console.log(`Data: ${data.senha}`);
         if (data.senha){
           console.log("Senha gerada: ", data.senha);
           alert(`Sua senha é ${data.senha}, aguarde ser chamado!`);

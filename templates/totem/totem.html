@@ -4,8 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Totem - Retirada de Senha</title>
-  <link rel="stylesheet" href="/static/style.css">
-  
+  <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+  <script>
+    const API_URL_NODE = "{{API_URL_NODE}}";
+    const API_URL_FLASK = "{{API_URL_FLASK}}";
+</script>
 </head>
 
 <body>

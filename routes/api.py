@@ -2,13 +2,11 @@ from flask import Blueprint, jsonify, g, request
 from flask_login import login_required, current_user
 from ..database.db import ServicoBancoDeDados
 from ..routes.totem import ServicoTotem
-import requests
-
+from os import getenv
 
 api = Blueprint("api", __name__)
 
-NODE_JS_SERVER = "http://localhost:4000"
-API_KEY_NODE_TO_FLASK = "012345"
+API_KEY_NODE_TO_FLASK = getenv("API_KEY_NODE_TO_FLASK")
 
 # Nova função para validar a chave de API
 def validate_api_key():
@@ -35,19 +33,6 @@ def teardown_request(exception=None):
     if db is not None:
         db.conn.close()
         print("Conexao com o banco de dados fechada com sucesso!")
-
-# Conexao com o websocket node
-def emitir_evento_websocket():
-    """Faz uma requisição para o websocket, informando que a fila mudou"""
-    try:
-        requests.post(
-            f"{NODE_JS_SERVER}/api/emit-update",
-            json={"key": API_KEY_NODE_TO_FLASK}
-        )
-        print("Envento de atualização enviado com sucesso ao servidor node.js")
-    except Exception as e:
-        print(f"Falha no envio do evento de atualização da fila {e}")
-        
 
 # Retorna a fila por completo
 @api.route("/api/v1/fila", methods=["GET"])

@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, g
 from ..database.db import ServicoBancoDeDados
+from os import getenv
 
 # Ao incluir o prefixo, nao e necessario especificar o nome da rota
 totem = Blueprint("totem", __name__, url_prefix="/totem")
@@ -73,4 +74,5 @@ class ServicoTotem():
 # Home do usuario (Totem)
 @totem.route("/")
 def home():
-    return render_template("/totem/totem.html")
+    # Passando as variaveis de ambiente de forma dinamica 
+    return render_template("/totem/totem.html", API_URL_FLASK=getenv("API_URL_FLASK"), API_URL_NODE=getenv("API_URL_NODE"))

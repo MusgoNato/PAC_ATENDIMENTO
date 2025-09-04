@@ -2,6 +2,7 @@ from flask import request, redirect, url_for, render_template, Blueprint, sessio
 from flask_login import login_user, login_required, logout_user
 from ..models.user import User
 from ..database.db import ServicoBancoDeDados
+from os import getenv
 
 atendente = Blueprint("atendente", __name__)
 
@@ -60,7 +61,7 @@ def login():
 @login_required
 def home():
     nome_guiche = session.get('nome_guiche', 'Guichê Padrão')
-    return render_template("atendente/home.html", nome_guiche=nome_guiche)
+    return render_template("atendente/home.html", nome_guiche=nome_guiche, API_URL_FLASK=getenv("API_URL_FLASK"), API_URL_NODE=getenv("API_URL_NODE"), URL_WEBSOCKET=getenv("URL_WEBSOCKET"))
 
 @atendente.route("/logout")
 @login_required

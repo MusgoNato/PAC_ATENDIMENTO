@@ -8,16 +8,18 @@ from dotenv import load_dotenv
 from os import getenv
 from flask_login import LoginManager
 from .models.user import User
+import os
 
 # Carregamento das variaveis de ambiente
 load_dotenv()
-host, user, password, database, key_secret = getenv("HOST"), getenv("DB_USER"), getenv("PASSWORD"), getenv("DATABASE"), getenv("KEY_SECRET")
+host, user, password, database, key_secret = getenv("DB_HOST"), getenv("DB_USER"), getenv("DB_PASSWORD"), getenv("DB_NAME"), getenv("KEY_SECRET")
 
 # Inicialização do banco de dados da aplicação
 try:
     ServicoBancoDeDados.setParametros(host, user, password, database)
 except Exception as e:
     raise Exception(f"Não foi possível inicializar a aplicação {e}")
+
 
 # Inicializa objeto da aplicacao
 app = Flask(__name__)
@@ -33,7 +35,8 @@ login_manager.login_view = "atendente.login"
 def load_user(user_id):
     db_params = ServicoBancoDeDados._ServicoBancoDeDados__params
     if not db_params:
-        return None # Parâmetros não definidos, não é possível conectar.
+        # Parâmetros não definidos, não é possível conectar.
+        return None 
 
     db = None
     try:

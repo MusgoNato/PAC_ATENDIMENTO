@@ -21,16 +21,16 @@ except Exception as e:
 
 # Define o caminho para a pasta principal do projeto
 basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+print(basedir)
 
 # Inicializa objeto da aplicacao
-app = Flask(__name__, template_folder=os.path.join(basedir, 'templates'))
+app = Flask(__name__, template_folder=os.path.join(basedir, 'templates'), static_folder=os.path.join(basedir, 'static'))
 
 # Configurar Flask-Login
 app.secret_key = key_secret
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "atendente.login"
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -63,12 +63,6 @@ app.register_blueprint(atendente, url_prefix='/atendente')
 app.register_blueprint(totem, url_prefix='/totem')
 app.register_blueprint(api, url_prefix='/api/v1/fila')
 
-# Imprime todas as rotas registradas na sua aplicação
-with app.test_request_context():
-    print("--- Rotas Registradas ---")
-    for rule in app.url_map.iter_rules():
-        print(f"Endpoint: {rule.endpoint} -> Caminho: {rule.rule}")
-    print("-------------------------")
 
 # Buscador para o app dentro do CPanel
 application = app

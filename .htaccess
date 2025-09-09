@@ -1,0 +1,27 @@
+RewriteEngine On
+
+#Redirect 301 /teste-redirecionamento https://www.google.com
+
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerEnabled on
+PassengerAppRoot "/home/riobrilhantems/public_html/pac"
+PassengerBaseURI "/pac"
+PassengerPython "/home/riobrilhantems/virtualenv/public_html/pac/3.13/bin/python"
+PassengerAppLogFile "/home/riobrilhantems/logs/pac_log.log"
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
+
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+
+#RewriteRule ^(.*)$ passenger_wsgi.py/$1 [QSA,L]
+
+SetEnv DB_HOST localhost
+SetEnv DB_USER riobrilhantems_stags
+SetEnv DB_PASSWORD !pmrb2609
+SetEnv DB_NAME riobrilhantems_dev_pac
+SetEnv API_URL_NODE http://127.0.0.1:4000/api
+SetEnv API_URL_FLASK http://127.0.0.1:5000/api/v1/fila
+SetEnv API_KEY_NODE_TO_FLASK 012345
+SetEnv KEY_SECRET 123
+SetEnv URL_WEBSOCKET http://127.0.0.1:4000
+SetEnv FLASK_APP app

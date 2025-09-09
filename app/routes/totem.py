@@ -72,7 +72,7 @@ class ServicoTotem():
 
 
 # Home do usuario (Totem)
-@totem.route("/")
+@totem.route("")
 def home():
     # Passando as variaveis de ambiente de forma dinamica 
-    return render_template("/totem/totem.html", API_URL_FLASK=getenv("API_URL_FLASK"), API_URL_NODE=getenv("API_URL_NODE"))
+    return render_template("totem/totem.html", API_URL_FLASK=getenv("API_URL_FLASK"), API_URL_NODE=getenv("API_URL_NODE"))

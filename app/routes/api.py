@@ -35,7 +35,7 @@ def teardown_request(exception=None):
         print("Conexao com o banco de dados fechada com sucesso!")
 
 # Retorna a fila por completo
-@api.route("/api/v1/fila", methods=["GET"])
+@api.route("/", methods=["GET"])
 @login_required
 def get_queue():
     if g.db is None:
@@ -58,7 +58,7 @@ def get_queue():
         return jsonify({"error": "Falha ao buscar a fila de espera"})
 
 
-@api.route("/api/v1/fila/chamar/<int:ticket_id>", methods=["POST"])
+@api.route("/chamar/<int:ticket_id>", methods=["POST"])
 def chamar_cliente(ticket_id):
     if g.db is None:
         return jsonify({"error": "Falha na conexao com o banco de dados"}), 500
@@ -81,7 +81,7 @@ def chamar_cliente(ticket_id):
 
 
 # Rota para deletar o cliente
-@api.route("/api/v1/fila/<int:ticket_id>", methods=["POST"])
+@api.route("/<int:ticket_id>", methods=["POST"])
 def del_cliente(ticket_id):
     if not validate_api_key():
         print("Chegou na funcao para delear cliente")
@@ -102,7 +102,7 @@ def del_cliente(ticket_id):
         return jsonify({"error": "Falha ao deletar cliente"}), 500
 
 
-@api.route("/api/v1/fila/em-atendimento", methods=["GET"])
+@api.route("/em-atendimento", methods=["GET"])
 @login_required
 def get_cliente_em_atendimento():
     if g.db is None:
@@ -132,7 +132,7 @@ def get_cliente_em_atendimento():
 
 
 # ----------------Totem---------------- #
-@api.route("/api/v1/fila/nova_senha", methods=["POST"])
+@api.route("/nova_senha", methods=["POST"])
 def gerar_senha():
     if not validate_api_key():
         return jsonify({"error": "Chave de API inválida!"}), 401

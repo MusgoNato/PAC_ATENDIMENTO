@@ -4,7 +4,7 @@ from ..models.user import User
 from ..database.db import ServicoBancoDeDados
 from os import getenv
 
-atendente = Blueprint("atendente", __name__)
+atendente = Blueprint("atendente", __name__, url_prefix="/atendente")
 
 
 @atendente.before_request

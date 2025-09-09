@@ -18,4 +18,4 @@ class ServicoPainel():
 # Home do Painel (Painel)
 @painel.route("/")
 def home():
-    return render_template("/painel/painel.html")
+    return render_template("painel/painel.html")

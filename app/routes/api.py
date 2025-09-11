@@ -34,6 +34,8 @@ def teardown_request(exception=None):
         db.conn.close()
         print("Conexao com o banco de dados fechada com sucesso!")
 
+#------------------Atendente------------------#
+
 # Retorna a fila por completo
 @api.route("/", methods=["GET"])
 @login_required
@@ -145,3 +147,62 @@ def gerar_senha():
     senha_gerada = servico_totem.get_NovaSenha(tipo)
     
     return jsonify({"senha": senha_gerada}), 200
+
+#------------------Painel------------------#
+@api.route("/painel", methods=["POST"])
+def get_fila_para_atendimento():
+    if g.db is None:
+        return jsonify({"error": "Falha na conexao com o banco de dados do painel!"}), 500
+    
+    if not validate_api_key():
+        return jsonify({"error": "Não foi informado chave API na requisição para a fila de atendimento do painel!"}), 401
+    try:
+
+        cursor = g.db.cursor
+
+        # Requisicao ao banco para retorno da fila, priorizando prioritários
+        cursor.execute("""
+        SELECT id, numero, tipo
+                FROM tickets
+                WHERE status = 'AGUARDANDO'
+                ORDER BY
+                    CASE
+                        WHEN tipo = 'PRIORITARIO' THEN 1
+                        ELSE 2
+                    END,
+                    id ASC
+        """)
+
+        # Retorna os dados da fila
+        fila_db = cursor.fetchall()
+        fila_formatada = [{'id': item['id'], 'numero': item['numero'], 'tipo': item['tipo']}
+            for item in fila_db
+        ]
+
+
+        # Guiches em atendimento
+        cursor.execute("SELECT id, numero, tipo, guiche_nome FROM tickets WHERE status = 'CHAMADO'")
+        atendendo_db = cursor.fetchall()
+        atendendo_formatado = [
+            {'numero': item['numero'], 'tipo': item['tipo'], 'guiche_nome': item['guiche_nome']}
+            for item in atendendo_db
+        ]
+
+        # Obtem os guiches disponiveis
+        cursor.execute("SELECT id, nome FROM guiches WHERE ativo = 1")  
+        guiches_db = cursor.fetchall()
+        guiches_formatados = [
+            {'id': item['id'], 'nome': item['nome']}
+            for item in guiches_db
+        ]
+
+        # Construção da resposta
+        response = {
+            "fila_de_espera": fila_formatada,
+            "guiches_atendimento": atendendo_formatado,
+            "guiches_disponiveis": guiches_formatados
+        }
+
+        return jsonify(response)
+    except Exception as e:
+        return jsonify({"error": "Falha ao buscar a fila completa do painel de atendimento!"}), 500

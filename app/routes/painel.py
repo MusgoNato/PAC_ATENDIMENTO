@@ -1,21 +1,9 @@
 from flask import Blueprint, render_template
+from os import getenv
 
 painel = Blueprint("painel", __name__)
-
-class ServicoPainel():
-    def __init__(self):
-        """
-        Contrutor do servico Painel
-        """
-        pass
-
-    def apresentacaoPainel():
-        """
-        Apresenta o painel para o usuario
-        """
-        pass
 
 # Home do Painel (Painel)
 @painel.route("/")
 def home():
-    return render_template("painel/painel.html")
+    return render_template("painel/painel.html", API_URL_FLASK=getenv("API_URL_FLASK"), API_URL_NODE=getenv("API_URL_NODE"), URL_WEBSOCKET=getenv("URL_WEBSOCKET"))

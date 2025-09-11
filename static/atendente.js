@@ -9,7 +9,7 @@ let currentCustomer = null;
 // Retorna a fila completa em espera
 async function fetchQueue() {
     try{
-        const response = await fetch(API_URL_FLASK);
+        const response = await fetch(`${API_URL_FLASK}/`);
         if (!response.ok){
             throw new error(`Erro de rede: ${response.status}'`);
         }

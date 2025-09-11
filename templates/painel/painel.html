@@ -5,10 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel</title>
   <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    const API_URL_FLASK = "{{API_URL_FLASK}}";
+    const API_URL_NODE = "{{API_URL_NODE}}";
+    const URL_WEBSOCKET = "{{URL_WEBSOCKET}}";
+  </script>
 </head>
 <body class="bodyPainel">
+  <!-- Fila de espera -->
+  <div id="fila-de-espera"></div>
+  <div id="guiches_atendimento"></div>
+  <div id="guiches_disponiveis"></div>
+
   <!-- Texto rolando fora da caixa -->
-  <div class="faixa">
+  <!-- <div class="faixa">
     <div class="texto-rolando">PAC - Sua senha será chamada em instantes!</div>
   </div>
 
@@ -29,7 +40,7 @@
       <div class="titulo">GUICHÊ 3</div>
       <div class="conteudo">303</div>
     </div>
-  </div>
+  </div> -->
   <script src="{{url_for('static', filename='painel.js')}}"></script>
 </body>
 </html>

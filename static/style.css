@@ -386,115 +386,97 @@
 /*------------Fim login atendente------------*/
 
 /*------------Painel-------------*/
-.bodyPainel{
+body {
+  font-family: Arial, sans-serif;
+  background: #fff;
+  color: #00923F;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 50px;
-  background: linear-gradient(120deg, #078282 100%, #acb6e0 100%);
-  color: var(--text); 
-  font-family: 'Segoe UI', Tahoma, sans-serif; 
 }
 
-/* Texto rolando fora da caixa */
-.faixa {
-  width: 100%;
-  overflow: hidden;
-  border-bottom: 1px solid black;
-  margin-bottom: 20px; /* espaço entre faixa e painel */
-  position: relative;
-  height: 30px;
+h1 {
+  font-size: 3rem;
+  margin: 20px 0 10px;
+  text-align: center;
 }
 
-.texto-rolando {
-  white-space: nowrap;
-  font-size: 1.5em;
-  font-weight: bold;
-  justify-content: center;
-  align-items: center;
-  color: #070707;
-  animation: mover 15s linear infinite;
+.data {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  text-align: center;
 }
 
-@keyframes mover {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(100%);
-  }
+.relogio {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 .painel {
-  display: grid;
-  grid-template-areas:
-    "topo topo topo"
-    "esq meio dir";
-  grid-gap: 70px;
-  justify-items: center;
-  align-items: center;
-}
-
-.painel > div {
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  font-weight: bold;
-  color: #000000;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-}
-
-.topo {
-  grid-area: topo;
-  width: 500px;
-  height: 300px;
-  border: 3px solid black;
-  font-size: 5.5em;
-  background: linear-gradient(120deg, #c3ffff 100%, #81c784 100%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.guiche {
-  width: 320px;
-  height: 220px;
-  border: 3px solid black;
-  font-size: 1.2em;
-  background: linear-gradient(120deg, #c3ffff 100%, #81c784 100%);
+  display: none;
+  width: 100%;
+  height: 100%;
   position: relative;
 }
 
-.titulo {
-  position: absolute;
-  top: 10px;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  font-size: 1.2em;
+.painel.ativo {
+  display: block;
 }
 
-.conteudo {
+.fila {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 2.5em;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 250px;
+  background: #00923F;
+  color: white;
+  padding: 30px 20px;
+  font-size: 2rem;
+  border-radius: 0 20px 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-.fade-out {
-  animation: fadeOut 0.7s forwards;
+
+.fila p {
+  margin: 8px 0;
 }
-.fade-in {
-  animation: fadeIn 0.7s;
+
+.guiches {
+  margin-left: 270px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: calc(100% - 250px);
+  padding: 20px;
 }
-@keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+
+.guiche {
+  background: #00923F;
+  color: white;
+  padding: 40px;
+  border-radius: 20px;
+  font-size: 2rem;
+  width: 28%;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
 }
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+
+.chamada {
+  background: #00923F;
+  color: white;
+  padding: 40px;
+  border-radius: 20px;
+  font-size: 2.5rem;
+  margin: 20px auto;
+  max-width: 700px;
+  text-align: center;
 }
+
 /*-------------Fim painel-------------*/

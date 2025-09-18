@@ -12,35 +12,32 @@
     const URL_WEBSOCKET = "{{URL_WEBSOCKET}}";
   </script>
 </head>
-<body class="bodyPainel">
-  <!-- Fila de espera -->
-  <div id="fila-de-espera"></div>
-  <div id="guiches_atendimento"></div>
-  <div id="guiches_disponiveis"></div>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<body>
+  <h1>PAC Posto de Atendimento ao Contribuinte</h1>
 
-  <!-- Texto rolando fora da caixa -->
-  <!-- <div class="faixa">
-    <div class="texto-rolando">PAC - Sua senha será chamada em instantes!</div>
+  <div class="fila">
+  <h3>Fila</h3>
+  <ul id="lista-fila">
+    <!-- senhas aparecem aqui -->
+  </ul>
+</div>
+
+
+    <div>
+      <p>Rio Brilhante</p>
+      <div class="relogio" id="relogio">09:45:43</div>
+      <div class="data">Quinta, 11 de setembro de 2025</div>
+      <div class="guiches">
+        <div class="guiche">Guichê 1<br>N201</div>
+        <div class="guiche">Guichê 2<br>P223</div>
+        <div class="guiche">Guichê 3<br>N209</div>
+      </div>
+      <footer>RIO BRILHANTE-MS</footer>
+    </div>
   </div>
-
-  <div class="painel">
-  <div class="topo" id="painel-topo"><span id="topo-texto">P234</span></div>
-
-    <div class="guiche esq">
-      <div class="titulo">GUICHÊ 1</div>
-      <div class="conteudo" id="guiche1-conteudo">101</div>
-    </div>
-
-    <div class="guiche meio">
-      <div class="titulo">GUICHÊ 2</div>
-      <div class="conteudo">202</div>
-    </div>
-
-    <div class="guiche dir">
-      <div class="titulo">GUICHÊ 3</div>
-      <div class="conteudo">303</div>
-    </div>
-  </div> -->
   <script src="{{url_for('static', filename='painel.js')}}"></script>
 </body>
 </html>

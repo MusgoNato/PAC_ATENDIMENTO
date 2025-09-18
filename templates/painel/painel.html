@@ -18,22 +18,34 @@
 <body>
   <h1>PAC Posto de Atendimento ao Contribuinte</h1>
 
-  <div class="fila">
-  <h3>Fila</h3>
-  <ul id="lista-fila">
-    <!-- senhas aparecem aqui -->
-  </ul>
-</div>
 
+  <div class="container">
+    <!-- Fila -->
+    <div class="fila">
+      <p>Fila</p>
+      <div id="fila-de-espera"></div>
+    </div>
 
-    <div>
-      <p>Rio Brilhante</p>
-      <div class="relogio" id="relogio">09:45:43</div>
-      <div class="data">Quinta, 11 de setembro de 2025</div>
-      <div class="guiches">
-        <div class="guiche">Guichê 1<br>N201</div>
-        <div class="guiche">Guichê 2<br>P223</div>
-        <div class="guiche">Guichê 3<br>N209</div>
+    <!-- Relógio -->
+    <div class="relogio-container">
+      <div class="cidade">Rio Brilhante</div>
+      <div class="relogio" id="relogio">00:00:00</div>
+      <div class="data" id="date"></div>
+    </div>
+  </div>
+
+  <!-- Guichês -->
+  <div id="guiches_atendimento" class="guiches">
+    <!-- O JS vai preencher -->
+  </div>
+
+  <div id="guiches_disponiveis" class="guiches"
+    <!-- O JS vai preencher -->
+  </div>
+
+    <div id="guiches_atendimento" class="guiches">
+    <!-- O JS vai preencher -->
+  </div>
       </div>
       <footer>RIO BRILHANTE-MS</footer>
     </div>

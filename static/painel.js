@@ -15,6 +15,7 @@ async function fetchAndRenderQueue() {
     }
     
     const data = await response.json();
+    console.log(data);
     
     // Contêineres
     const queueContainer = document.getElementById('fila-de-espera');
@@ -28,7 +29,7 @@ async function fetchAndRenderQueue() {
 
     // 1. Renderizar a Fila de Espera
     if (data.fila_de_espera && data.fila_de_espera.length > 0) {
-        data.fila_de_espera.forEach(item => {
+        data.fila_de_espera.slice(0, 4).forEach(item => {
             const queueItem = document.createElement('div');
             queueItem.className = 'fila-item';
             queueItem.innerHTML = `<span class="senha-numero">${item.numero}</span>`;
@@ -56,7 +57,8 @@ async function fetchAndRenderQueue() {
             atendendoContainer.appendChild(atendendoItem);
         });
     } else {
-        atendendoContainer.innerHTML = '<p>Nenhum guichê em atendimento.</p>';
+        aten
+        dendoContainer.innerHTML = '<p>Nenhum guichê em atendimento.</p>';
     }
 
     // 3. Renderizar Guichês Disponíveis
@@ -64,7 +66,6 @@ async function fetchAndRenderQueue() {
         data.guiches_disponiveis.forEach(item => {
             const disponivelItem = document.createElement('div');
             disponivelItem.className = 'guiche-disponivel-item';
-            disponivelItem.innerHTML = `<p>${item.nome}</p>`;
             disponiveisContainer.appendChild(disponivelItem);
         });
     } else {
@@ -76,9 +77,20 @@ async function fetchAndRenderQueue() {
   }
 }
 
+function atualizarRelogio() {
+      const agora = new Date();
+      const horas = String(agora.getHours()).padStart(2, '0');
+      const minutos = String(agora.getMinutes()).padStart(2, '0');
+      const segundos = String(agora.getSeconds()).padStart(2, '0');
+      const horaAtual = `${horas}:${minutos}:${segundos}`;
+
+      document.getElementById('relogio').textContent = horaAtual;
+    }
 
 async function inicializar_painel() {
     await fetchAndRenderQueue();
+    setInterval(atualizarRelogio, 1000);
+    atualizarRelogio();
 }
 
 socket.on('fila_atualizada', async () =>{
@@ -89,23 +101,23 @@ socket.on('fila_atualizada', async () =>{
 
 inicializar_painel();
 
-// document.addEventListener('DOMContentLoaded', function() {
-//   const btn = document.getElementById('animar-btn');
-//   const topo = document.getElementById('painel-topo-texto');
-//   const guiche1 = document.getElementById('guiche1-conteudo');
-//   if (btn && topo-texto && guiche1) {
-//     btn.addEventListener('click', function() {
-//       // Fade out topo-texto
-//       topo.classList.add('fade-out');
-//       setTimeout(() => {
-//         topo.style.visibility = 'hidden';
-//         // Fade in no guiche
-//         guiche1.textContent = topo-texto.textContent;
-//         guiche1.classList.add('fade-in');
-//         setTimeout(() => {
-//           guiche1.classList.remove('fade-in');
-//         }, 700);
-//       }, 700);
-//     });
-//   }
-// });
+document.addEventListener('DOMContentLoaded', function() {
+  const btn = document.getElementById('animar-btn');
+  const topo = document.getElementById('painel-topo-texto');
+  const guiche1 = document.getElementById('guiche1-conteudo');
+  if (btn && topo && guiche1) {
+    btn.addEventListener('click', function() {
+      // Fade out topo-texto
+      topo.classList.add('fade-out');
+      setTimeout(() => {
+        topo.style.visibility = 'hidden';
+        // Fade in no guiche
+        guiche1.textContent = topo-texto.textContent;
+        guiche1.classList.add('fade-in');
+        setTimeout(() => {
+          guiche1.classList.remove('fade-in');
+        }, 700);
+      }, 700);
+    });
+  }
+});

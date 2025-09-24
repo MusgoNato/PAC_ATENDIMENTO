@@ -68,3 +68,75 @@ def home():
 def logout():
     logout_user()
     return redirect(url_for('atendente.login'))
+
+# COLE ESTE CÓDIGO NO FINAL DO SEU ARQUIVO atendente.py
+
+@atendente.route("/chamar/<int:ticket_id>", methods=["POST"])
+@login_required
+def chamar_senha(ticket_id):
+    # Pega os dados do guichê (enviados pelo Node.js a partir do frontend)
+    dados_guiche = request.get_json()
+    guiche_id = dados_guiche.get('guiche_id')
+    guiche_nome = dados_guiche.get('guiche_nome')
+
+    # Validação para garantir que o nome do guichê foi enviado
+    if not guiche_nome:
+        return jsonify({"success": False, "error": "Nome do guichê não fornecido"}), 400
+
+    # Verifica se a conexão com o banco de dados existe
+    if g.db is None:
+        return jsonify({"success": False, "error": "Erro de conexão com o banco de dados"}), 500
+
+    cursor = g.db.cursor
+    
+    try:
+        # --- LÓGICA PRINCIPAL DA CORREÇÃO ---
+
+        # PASSO 1: REMOVER O ATENDIMENTO ANTERIOR DESTE GUICHÊ
+        # Isso garante que senhas antigas não fiquem presas no painel.
+        # (Assumindo que sua tabela se chama 'atendimentos_ativos'. Se for outro nome, ajuste aqui.)
+        cursor.execute(
+            "DELETE FROM data.guiches_atendimento WHERE guiche_nome = %s",
+            (guiche_nome,)
+        )
+
+        # PASSO 2: BUSCAR OS DADOS DA SENHA QUE SERÁ ATENDIDA
+        # Apenas busca senhas que ainda estão aguardando.
+        cursor.execute(
+            "SELECT numero, tipo FROM tickets WHERE id = %s AND status = 'AGUARDANDO'",
+            (ticket_id,)
+        )
+        ticket = cursor.fetchone()
+
+        # Se a senha não for encontrada (talvez outro guichê já a chamou), retorna um erro.
+        if not ticket:
+            g.db.conn.rollback() # Desfaz o DELETE do Passo 1
+            return jsonify({"success": False, "error": "Ticket não encontrado ou já em atendimento"}), 404
+
+        # Atualiza o status da senha para que não seja chamada novamente.
+        cursor.execute(
+            "UPDATE tickets SET status = 'EM ATENDIMENTO' WHERE id = %s",
+            (ticket_id,)
+        )
+
+        # PASSO 3: ADICIONAR O NOVO REGISTRO DE ATENDIMENTO
+        # Insere a nova senha que este guichê está atendendo agora.
+        cursor.execute(
+            "INSERT INTO atendimentos_ativos (guiche_id, guiche_nome, ticket_id, numero_senha, tipo_senha) VALUES (%s, %s, %s, %s, %s)",
+            (guiche_id, guiche_nome, ticket_id, ticket['numero'], ticket['tipo'])
+        )
+        
+        # Confirma todas as operações (DELETE, UPDATE, INSERT) no banco de dados.
+        g.db.conn.commit()
+
+        # Retorna uma mensagem de sucesso para o Node.js/frontend.
+        return jsonify({
+            "success": True,
+            "message": f"Senha {ticket['numero']} chamada com sucesso no guichê {guiche_nome}"
+        })
+
+    except Exception as e:
+        # Se qualquer passo falhar, desfaz todas as operações para manter o banco consistente.
+        g.db.conn.rollback()
+        print(f"ERRO CRÍTICO ao chamar senha: {e}")
+        return jsonify({"success": False, "error": "Ocorreu um erro interno ao processar a chamada"}), 500

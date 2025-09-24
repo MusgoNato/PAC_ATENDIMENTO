@@ -1,55 +1,38 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel</title>
-  <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  <script>
-    const API_URL_FLASK = "{{API_URL_FLASK}}";
-    const API_URL_NODE = "{{API_URL_NODE}}";
-    const URL_WEBSOCKET = "{{URL_WEBSOCKET}}";
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        const API_URL_FLASK = "{{API_URL_FLASK}}";
+        const API_URL_NODE = "{{API_URL_NODE}}";
+        const URL_WEBSOCKET = "{{URL_WEBSOCKET}}";
+    </script>
 </head>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
 <body>
-  <h1>PAC Posto de Atendimento ao Contribuinte</h1>
+    <h1>PAC Posto de Atendimento ao Contribuinte</h1>
 
+    <div class="main-content">
+        <div class="fila">
+            <p>Fila</p>
+            <div id="fila-de-espera"></div>
+        </div>
 
-  <div class="container">
-    <!-- Fila -->
-    <div class="fila">
-      <p>Fila</p>
-      <div id="fila-de-espera"></div>
+        <div class="relogio-container">
+            <div class="cidade">Rio Brilhante</div>
+            <div class="relogio" id="relogio">00:00:00</div>
+            <div class="data" id="date"></div>
+        </div>
+
+        <div id="guiches_atendimento" class="guiches">
+            </div>
     </div>
+  
+    <footer>RIO BRILHANTE-MS</footer>
 
-    <!-- Relógio -->
-    <div class="relogio-container">
-      <div class="cidade">Rio Brilhante</div>
-      <div class="relogio" id="relogio">00:00:00</div>
-      <div class="data" id="date"></div>
-    </div>
-  </div>
-
-  <!-- Guichês -->
-  <div id="guiches_atendimento" class="guiches">
-    <!-- O JS vai preencher -->
-  </div>
-
-  <div id="guiches_disponiveis" class="guiches"
-    <!-- O JS vai preencher -->
-  </div>
-
-    <div id="guiches_atendimento" class="guiches">
-    <!-- O JS vai preencher -->
-  </div>
-      </div>
-      <footer>RIO BRILHANTE-MS</footer>
-    </div>
-  </div>
-  <script src="{{url_for('static', filename='painel.js')}}"></script>
+    <script src="{{url_for('static', filename='painel.js')}}"></script>
 </body>
 </html>

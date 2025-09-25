@@ -397,7 +397,7 @@ body {
 /* Título */
 h1 {
     margin-top: 20px;
-    font-size: 2rem;
+    font-size: clamp(1.8rem, 3vw, 4rem); /* Mínimo, Ideal, Máximo */
     font-weight: bold;
 }
 
@@ -416,7 +416,7 @@ h1 {
 
 .fila p {
     font-weight: bold;
-    font-size: 1.3rem;
+    font-size: clamp(1.2rem, 2vw, 2.5rem);
     margin-bottom: 20px;
 }
 
@@ -425,7 +425,7 @@ h1 {
     background: white;
     color: #27ae60;
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: clamp(1.1rem, 1.2vw, 1.9rem);
     border-radius: 15px;
     padding: 15px;
     margin: 12px 0;
@@ -433,14 +433,14 @@ h1 {
 }
 
 .cidade {
-    font-size: 1.5rem;
+    font-size: clamp(1.2rem, 2vw, 2.5rem);
     margin-bottom: 5px;
     margin-top: -250px; /* Adicionando uma margem negativa para puxar para cima */
     margin-left: 40px;
 }
 
 .relogio {
-    font-size: 4.5rem;
+    font-size: clamp(4rem, 7vw, 9rem);
     font-family: 'Courier New', monospace;
     color: #333;
     margin-bottom: 10px;
@@ -449,7 +449,7 @@ h1 {
 }
 
 .data {
-    font-size: 1.5rem;
+    font-size: clamp(1.2rem, 2vw, 2.5rem);
     color: #555;
     margin-top: 5px;
     font-weight: 500;
@@ -461,7 +461,7 @@ h1 {
     display: flex;
     justify-content: center;
     gap: 30px;
-    margin-top: 160px;
+    margin-top: 100px;
 }
 
 .guiche-item {
@@ -478,6 +478,7 @@ h1 {
 .guiche-item h3 {
     color: white;
     margin-bottom: 15px;
+    font-size: clamp(1.2rem, 2.2vw, 2.8rem);;
 }
 
 /* Senha igual a fila */
@@ -487,7 +488,7 @@ h1 {
     border-radius: 12px;
     padding: 10px;
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: clamp(1.1rem, 2vw, 2.5rem);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -538,7 +539,7 @@ h1 {
 
 /* Rodapé */
 footer {
-    margin-top: 40px;
+    margin-top: 10px;
     font-size: 1.2rem;
     font-weight: bold;
 }

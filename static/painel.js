@@ -1,10 +1,3 @@
-const TODOS_OS_GUICHES = [
-    { guiche_nome: 'Guiche 1' },
-    { guiche_nome: 'Guiche 2' },
-    { guiche_nome: 'Guiche 3' },
-    // Adicione mais guichês aqui se necessário, ex: { guiche_nome: '04' }
-];
-
 // Variável para guardar o estado anterior dos atendimentos
 let atendimentosAnteriores = {};
 
@@ -12,16 +5,13 @@ const socket = io(URL_WEBSOCKET);
 
 // Função para buscar e renderizar a fila de espera e guichês
 async function fetchAndRenderQueue() {
-    // Declaramos as variáveis aqui, no início da função, para que sempre existam.
     const queueContainer = document.getElementById('fila-de-espera');
     const atendendoContainer = document.getElementById('guiches_atendimento');
 
     try {
         const response = await fetch(`${API_URL_NODE}/painel`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' }
         });
 
         if (!response.ok) {
@@ -29,15 +19,14 @@ async function fetchAndRenderQueue() {
         }
         
         const data = await response.json();
-        console.log(data);
+        console.log("Dados recebidos:", data);
         
-        // Limpa os contêineres antes de renderizar novamente
         queueContainer.innerHTML = '';
         if (atendendoContainer) {
             atendendoContainer.innerHTML = '';
         }
 
-        // 1. Renderizar a Fila de Espera
+        // Renderizar a Fila de Espera
         if (data.fila_de_espera && data.fila_de_espera.length > 0) {
             data.fila_de_espera.slice(0, 4).forEach(item => {
                 const queueItem = document.createElement('div');
@@ -55,29 +44,25 @@ async function fetchAndRenderQueue() {
             queueContainer.innerHTML = '<p>Nenhuma senha na fila.</p>';
         }
     
-        // 2. Renderizar TODOS os Guichês (em atendimento ou livres)
-        if (atendendoContainer) {
+        // Renderizar TODOS os Guichês dinamicamente
+        if (atendendoContainer && data.guiches_disponiveis) {
             const atendimentos = data.guiches_atendimento || [];
 
-            TODOS_OS_GUICHES.forEach(guiche => {
-                const atendimentoAtual = atendimentos.find(at => at.guiche_nome === guiche.guiche_nome);
-
+            data.guiches_disponiveis.forEach(guiche => {
+                // CORREÇÃO 1: Usar guiche.nome para a comparação
+                const atendimentoAtual = atendimentos.find(at => at.guiche_nome === guiche.nome);
                 const guicheItem = document.createElement('div');
                 
                 if (atendimentoAtual) {
-                    // --- LÓGICA DA ANIMAÇÃO ---
                     const nomeGuiche = atendimentoAtual.guiche_nome;
                     const senhaAnterior = atendimentosAnteriores[nomeGuiche];
                     const senhaAtual = atendimentoAtual.numero;
 
-                    guicheItem.className = 'guiche-item'; // Define a classe base
+                    guicheItem.className = 'guiche-item';
 
-                    // Compara a senha atual com a anterior para este guichê
                     if (!senhaAnterior || senhaAnterior !== senhaAtual) {
-                        // Se não havia senha antes OU se a senha mudou, é uma nova chamada!
                         guicheItem.classList.add('chamada-recente');
                     }
-                    // --- FIM DA LÓGICA DA ANIMAÇÃO ---
 
                     guicheItem.innerHTML = `
                         <h3>${atendimentoAtual.guiche_nome}</h3>
@@ -87,10 +72,10 @@ async function fetchAndRenderQueue() {
                         </div>
                     `;
                 } else {
-                    // Se não encontrou, o guichê está LIVRE
-                    guicheItem.className = 'guiche-item'; // Garante a classe base
+                    guicheItem.className = 'guiche-item';
+                    // CORREÇÃO 2: Usar guiche.nome para exibir o nome do guichê livre
                     guicheItem.innerHTML = `
-                        <h3>${guiche.guiche_nome}</h3>
+                        <h3>${guiche.nome}</h3>
                         <div class="guiche_card guiche-livre">
                             <span>Livre</span>
                         </div>
@@ -100,7 +85,7 @@ async function fetchAndRenderQueue() {
             });
         }
 
-        // ATUALIZA O ESTADO ANTERIOR PARA A PRÓXIMA COMPARAÇÃO
+        // ATUALIZA O ESTADO ANTERIOR
         const novoEstado = {};
         if (data.guiches_atendimento) {
             data.guiches_atendimento.forEach(at => {
@@ -123,12 +108,9 @@ function atualizarRelogio() {
     const minutos = String(agora.getMinutes()).padStart(2, '0');
     const segundos = String(agora.getSeconds()).padStart(2, '0');
     const horaAtual = `${horas}:${minutos}:${segundos}`;
-
     document.getElementById('relogio').textContent = horaAtual;
-
     const opcoes = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const dataFormatada = agora.toLocaleDateString('pt-BR', opcoes);
-
     document.getElementById('date').textContent = dataFormatada;
 }
 
@@ -143,5 +125,4 @@ socket.on('fila_atualizada', async () => {
     await fetchAndRenderQueue();
 });
 
-// Inicializa o painel quando o script carregar
 inicializar_painel();

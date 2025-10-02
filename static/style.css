@@ -66,7 +66,38 @@
       .print-ticket .code { font-size: 48px; font-weight: 900; margin: 8px 0; }
       .print-ticket .meta { font-size: 14px; }
     }
-/*-------------Totem do usuario-------------*/
+
+    #alert-box{
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ff4d4d;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 20px;
+    text-align: center;
+    z-index: 1000; /* Z-index ALTO para estar acima de tudo */
+    }
+
+    #overlay {
+    display: none; /* Começa escondido */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Cor levemente transparente para indicar que a tela está bloqueada */
+    background: rgba(0, 0, 0, 0.3); 
+    /* Z-index logo abaixo da alert-box, mas acima dos botões (que estariam em z-index padrão ~0) */
+    z-index: 999; 
+  }
+/*-------------
+    }
+    
+    Totem do usuario-------------*/
 
 
 /*-------------Interface atendente-------------*/

@@ -98,3 +98,7 @@ app.register_blueprint(login, url_prefix='/login')
 Caso você tenha alguns erros ao tentar acessar alguma rota e retorne uma mensagem contendo `issue` alguma coisa. Vá ao log de erro que você definiu na criação da aplicação do python, já vai estar o caminho pra voce encontrar, é ele quem vai dizer se sua aplicação inicializou de forma correta
 #### Log de erro do servidor
 Se você tiver algum erro mais profundo que o log da aplicação não está cobrindo ou está vazio, vá ao log de erro do servidor, fica localizado na aba ferramentas dentro do cPanel.
+
+
+### Impressora KNUP KP-1031
+Para integração da impressora knup, é necessário entender a linguagem de programação que a própria impressora utiliza para se comunicar, TSPL. Assim sendo, o envio da impressora deve ser feito

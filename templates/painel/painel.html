@@ -1,61 +1,38 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>PAC Atendimento</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        const API_URL_FLASK = "{{API_URL_FLASK}}";
+        const API_URL_NODE = "{{API_URL_NODE}}";
+        const URL_WEBSOCKET = "{{URL_WEBSOCKET}}";
+    </script>
 </head>
 <body>
+    <h1>PAC Posto de Atendimento ao Contribuinte</h1>
 
-  <h1>PAC Posto de Atendimento ao Contribuinte</h1>
-  <div class="data" id="dataAtual"></div>
-<div class="relogio" id="relogioNormal"></div>
-  <!-- Painel modo normal -->
-  <div id="painelNormal" class="painel ativo">
-    <div class="fila">
-      <p>Fila</p>
-      <p>P224</p>
-      <p>N210</p>
-      <p>N211</p>
-      <p>N212</p>
+    <div class="main-content">
+        <div class="fila">
+            <p>Fila</p>
+            <div id="fila-de-espera"></div>
+        </div>
+
+        <div class="relogio-container">
+            <div class="cidade">Rio Brilhante</div>
+            <div class="relogio" id="relogio">00:00:00</div>
+            <div class="data" id="date"></div>
+        </div>
+
+        <div id="guiches_atendimento" class="guiches">
+            </div>
     </div>
-    <div class="relogio" id="relogioNormal"></div>
-    <div class="guiches">
-      <div class="guiche">Guichê 1<br>N201</div>
-      <div class="guiche">Guichê 2<br>P223</div>
-      <div class="guiche">Guichê 3<br>N209</div>
-    </div>
-  </div>
+  
+    <footer>RIO BRILHANTE-MS</footer>
 
-  <!-- Painel modo destaque -->
-  <div id="painelChamada" class="painel">
-    <div class="chamada">
-      <p>Senha</p>
-      <p id="senhaChamada">---</p>
-      <p>dirija-se ao guichê <span id="guicheChamada">-</span></p>
-    </div>
-    <div class="relogio" id="relogioChamada"></div>
-    <div class="guiches">
-      <div class="guiche">Guichê 1<br>N201</div>
-      <div class="guiche">Guichê 2<br>P223</div>
-      <div class="guiche">Guichê 3<br>N209</div>
-    </div>
-  </div>
-
-  <!-- Botão de teste (simula uma chamada) -->
-  <button onclick="chamarSenha('N224', 3)">Chamar Senha</button>
-
-  <!-- Som da chamada -->
-  <audio id="somChamada" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3"></audio>
-
-  <!-- Variáveis de ambiente -->
-  <script>
-    const URL_WEBSOCKET = "{{ URL_WEBSOCKET }}";
-    const API_URL_NODE = "{{ API_URL_NODE }}";
-  </script>
-
-  <!-- Scripts -->
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  <script src="{{ url_for('static', filename='painel.js') }}"></script>
+    <script src="{{url_for('static', filename='painel.js')}}"></script>
 </body>
 </html>

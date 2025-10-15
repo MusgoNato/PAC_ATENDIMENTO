@@ -17,8 +17,8 @@ PRINTER_NAME_IN_LOCAL_RASPBERRY = "ZDesigner GC420d"
 
 # Configuracoes do IP, porta e tempo para conexao via socket com o raspberry local
 PI_IP_RASPBERRY = getenv("PI_IP_RASPBERRY")
-PI_PORT_RASPBERRY = getenv("PI_PORT_RASPBERRY")
-TIMEOUT_RASPBERRY = getenv("TIMEOUT_RASPBERRY")
+PI_PORT_RASPBERRY = int(getenv("PI_PORT_RASPBERRY"))
+TIMEOUT_RASPBERRY = int(getenv("TIMEOUT_RASPBERRY"))
 
 # Responsavel pelo envio do ticket a ser impresso
 def print_zebra(numero, tipo):

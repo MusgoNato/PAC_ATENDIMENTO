@@ -3,10 +3,9 @@ from flask_login import login_required, current_user
 from ..database.db import ServicoBancoDeDados
 from ..routes.totem import ServicoTotem
 import win32print
-import win32con
 from datetime import datetime
-from PIL import Image, ImageDraw, ImageFont
 from os import getenv
+import socket
 
 SUCESSO = True
 FALHA = False
@@ -14,125 +13,67 @@ FALHA = False
 api = Blueprint("api", __name__)
 
 API_KEY_NODE_TO_FLASK = getenv("API_KEY_NODE_TO_FLASK")
-PRINTER_NAME = "TSC DA200O"
+PRINTER_NAME_IN_LOCAL_RASPBERRY = "ZDesigner GC420d"
 
-# Reponsavel por verificar se a impressora esta on/off
-def impressora_online():
-    try:
-        hprinter = win32print.OpenPrinter(PRINTER_NAME)
-        printer_info = win32print.GetPrinter(hprinter, 2)
-        win32print.ClosePrinter(hprinter)
-
-        status = printer_info["Status"]
-        attributes = printer_info["Attributes"]
-
-        if status & win32print.PRINTER_STATUS_OFFLINE or attributes & win32print.PRINTER_ATTRIBUTE_WORK_OFFLINE:
-            return False
-        return True
-    except:
-        return False
-
-def image_to_tspl(img, x=20, y=20):
-    """
-    Converte imagem PIL (1-bit) para comando TSPL BITMAP
-    """
-    width, height = img.size
-    width_bytes = (width + 7) // 8  # cada byte = 8 pixels
-
-    # Converte pixels em bytes
-    pixels = img.load()
-    data = bytearray()
-    for row in range(height):
-        for byte_idx in range(width_bytes):
-            byte = 0
-            for bit in range(8):
-                col = byte_idx * 8 + bit
-                if col < width:
-                    pixel = pixels[col, row]
-                    if pixel == 0:  # preto
-                        byte |= (1 << (7 - bit))
-            data.append(byte)
-
-    # Comando TSPL: BITMAP x,y,width_bytes,height,mode,data
-    # mode=0 (OR), mode=1 (XOR), normalmente 0
-    header = f"BITMAP {x},{y},{width_bytes},{height},0,".encode("utf-8")
-    return header + data + b"\n"
-
-def text_to_bitmap(text, font_size=24, padding=10):
-    # Fonte padrão do PIL
-    font = ImageFont.load_default()
-
-    # Cria imagem temporária só para medir o texto
-    dummy_img = Image.new("1", (1, 1), "white")
-    draw = ImageDraw.Draw(dummy_img)
-
-    # Mede o tamanho do texto corretamente
-    try:
-        # Pillow mais novo → usa textbbox
-        bbox = draw.textbbox((0, 0), text, font=font)
-        text_w, text_h = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    except AttributeError:
-        # Pillow mais antigo → usa textsize
-        text_w, text_h = draw.textsize(text, font=font)
-
-    # Cria imagem final em branco (fundo branco, texto preto)
-    img = Image.new("1", (text_w + padding * 2, text_h + padding * 2), 1)  # 1-bit, branco
-    draw = ImageDraw.Draw(img)
-    draw.text((padding, padding), text, font=font, fill=0)  # fill=0 → preto
-
-    return img
+# Configuracoes do IP, porta e tempo para conexao via socket com o raspberry local
+PI_IP_RASPBERRY = getenv("PI_IP_RASPBERRY")
+PI_PORT_RASPBERRY = getenv("PI_PORT_RASPBERRY")
+TIMEOUT_RASPBERRY = getenv("TIMEOUT_RASPBERRY")
 
 # Responsavel pelo envio do ticket a ser impresso
-def print_knup(numero, tipo):
-    hprinter = None
+def print_zebra(numero, tipo):
+
+    data = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+    # --- ZPL FINAL: Cortador Forçado e Comprimento Curto ---
+    zpl_command = f"""^XA
+    ^MNN           ; mídia contínua
+    ^PW480         ; largura da etiqueta (≈ 60 mm)
+    ^LL320         ; altura da etiqueta (≈ 40 mm)
+    ^LH0,0
+
+    ^FO0,80
+    ^FB480,1,0,C,0
+    ^A0N,70,70
+    ^FD{numero}^FS
+
+    ^FO0,170
+    ^FB480,1,0,C,0
+    ^A0N,60,60
+    ^FD{tipo}^FS
+
+    ^FO0,260
+    ^FB480,1,0,C,0
+    ^A0N,35,35
+    ^FD{data}^FS
+
+    ^XZ"""
+
     try:
-        hprinter = win32print.OpenPrinter(PRINTER_NAME)
-        printer_info = win32print.GetPrinter(hprinter, 2)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(TIMEOUT_RASPBERRY)
 
-        # Checa status da impressora
-        status = printer_info["Status"]
-        attributes = printer_info["Attributes"]
+        s.connect((PI_IP_RASPBERRY, PI_PORT_RASPBERRY))
 
-        # Flags comuns de problema
-        if status & win32print.PRINTER_STATUS_OFFLINE or attributes & win32print.PRINTER_ATTRIBUTE_WORK_OFFLINE:
-            print("Impressora está offline/desplugada!")
-            return FALHA
+        s.sendall(zpl_command.encode("utf-8"))
 
-        # Se chegou aqui, impressora está online → envia comando
-        doc_info = ("TSPL Job", None, "RAW")
-        hjob = win32print.StartDocPrinter(hprinter, 1, doc_info)
-        win32print.StartPagePrinter(hprinter)
+        print("Comando enviado com sucesso a impressora!")
 
-        data = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-
-        img = text_to_bitmap(f"SENHA: {numero}\nTIPO: {tipo}\n{data}", font_size=120)
-
-        # Converte para 1-bit a imagem resultante
-        img = img.convert('1')
-
-        # Dobra o tamanho da imagem inteira
-        img = img.resize((img.width * 6, img.height * 6))
-
-        # Converte para TSPL
-        tspl_header = b"SIZE 60 mm,40 mm\nCLS\n"
-        tspl_img = image_to_tspl(img, 20, 20)
-        tspl_footer = b"PRINT 1\n"
-
-        win32print.WritePrinter(hprinter, tspl_header + tspl_img + tspl_footer)
-        win32print.EndPagePrinter(hprinter)
-        win32print.EndDocPrinter(hprinter)
         return SUCESSO
-
+    
+    except socket.timeout:
+        print("Tempo limite de conexao escogtado! Raspberry ou serviço 9100 offline")
+        return FALHA
+    except ConnectionRefusedError:
+        print("Conexao recusada. Serviço SOCAT 9100 nõ esta rodando")
+        return FALHA
     except Exception as e:
-        print(f"Erro ao imprimir/conectar impressora KNUP: {e}")
+        print(f"Erro desconhecido : {e}")
         return FALHA
     finally:
-        if hprinter is not None:
-            try:
-                win32print.ClosePrinter(hprinter)
-            except:
-                pass
-
+        if 's' in locals() and s:
+            s.close()
+        
 # Nova função para validar a chave de API
 def validate_api_key():
     """Verifica se o cabeçalho 'X-API-Key' está presente e é válido."""
@@ -269,14 +210,6 @@ def gerar_senha():
     data = request.get_json()
     tipo = data.get("category")
 
-    # Primeiro: checar se impressora está online
-    if not impressora_online():
-        print("Impressora offline, senha não será gerada")
-        return jsonify({
-            "status": "erro_impressao",
-            "mensagem": "A impressora está offline. Aguarde o suporte!"
-        }), 200
-
     try:
         # Se chegou aqui, impressora está OK → gerar senha
         servico_totem = ServicoTotem(g.db)
@@ -286,7 +219,7 @@ def gerar_senha():
         return jsonify({"error": "Não foi possível gerar a senha no sistema."}), 500
 
     # Agora tenta imprimir de fato
-    if not print_knup(senha_gerada, tipo):
+    if not print_zebra(senha_gerada, tipo):
         return jsonify({
             "senha": senha_gerada,
             "status": "erro_impressao",

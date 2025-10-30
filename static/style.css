@@ -66,38 +66,7 @@
       .print-ticket .code { font-size: 48px; font-weight: 900; margin: 8px 0; }
       .print-ticket .meta { font-size: 14px; }
     }
-
-    #alert-box{
-    display: none;
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #ff4d4d;
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-    font-size: 20px;
-    text-align: center;
-    z-index: 1000; /* Z-index ALTO para estar acima de tudo */
-    }
-
-    #overlay {
-    display: none; /* Começa escondido */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* Cor levemente transparente para indicar que a tela está bloqueada */
-    background: rgba(0, 0, 0, 0.3); 
-    /* Z-index logo abaixo da alert-box, mas acima dos botões (que estariam em z-index padrão ~0) */
-    z-index: 999; 
-  }
-/*-------------
-    }
-    
-    Totem do usuario-------------*/
+/*-------------Totem do usuario-------------*/
 
 
 /*-------------Interface atendente-------------*/
@@ -416,116 +385,161 @@
 }
 /*------------Fim login atendente------------*/
 
-/*------------Painel-------------*/
-.bodyPainel{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 50px;
-  background: linear-gradient(120deg, #078282 100%, #acb6e0 100%);
-  color: var(--text); 
-  font-family: 'Segoe UI', Tahoma, sans-serif; 
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fff;
+    margin: 10px;
+    padding: 0;
+    text-align: center;
+    color: #27ae60;
 }
 
-/* Texto rolando fora da caixa */
-.faixa {
-  width: 100%;
-  overflow: hidden;
-  border-bottom: 1px solid black;
-  margin-bottom: 20px; /* espaço entre faixa e painel */
-  position: relative;
-  height: 30px;
+/* Título */
+h1 {
+    margin-top: 20px;
+    font-size: clamp(1.8rem, 3vw, 4rem); /* Mínimo, Ideal, Máximo */
+    font-weight: bold;
 }
 
-.texto-rolando {
-  white-space: nowrap;
-  font-size: 1.5em;
-  font-weight: bold;
-  justify-content: center;
-  align-items: center;
-  color: #070707;
-  animation: mover 15s linear infinite;
+/* Caixa da fila */
+.fila {
+    background: linear-gradient(180deg, #2ecc71, #27ae60);
+    color: white;
+    border-radius: 20px;
+    padding: 20px;
+    width: 260px;
+    text-align: center;
+    height: 360px;
+    margin-left: 80px;
+    margin-top: 10px;
 }
 
-@keyframes mover {
-  from {
-    transform: translateX(-100%);
+.fila p {
+    font-weight: bold;
+    font-size: clamp(1.2rem, 2vw, 2.5rem);
+    margin-bottom: 20px;
+}
+
+/* Cartões de senha e Guichê */
+.fila-item {
+    background: white;
+    color: #27ae60;
+    font-weight: bold;
+    font-size: clamp(1.1rem, 1.2vw, 1.9rem);
+    border-radius: 15px;
+    padding: 15px;
+    margin: 12px 0;
+    box-shadow: 0px 3px 6px rgba(0,0,0,0.1);
+}
+
+.cidade {
+    font-size: clamp(1.2rem, 2vw, 2.5rem);
+    margin-bottom: 5px;
+    margin-top: -250px; /* Adicionando uma margem negativa para puxar para cima */
+    margin-left: 40px;
+}
+
+.relogio {
+    font-size: clamp(4rem, 7vw, 9rem);
+    font-family: 'Courier New', monospace;
+    color: #333;
+    margin-bottom: 10px;
+    margin-top: 10px; /* Reduzindo a margem superior para subir */
+    margin-left: 40px;
+}
+
+.data {
+    font-size: clamp(1.2rem, 2vw, 2.5rem);
+    color: #555;
+    margin-top: 5px;
+    font-weight: 500;
+    margin-left: 40px;
+}
+
+/* Guichês */
+.guiches {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 100px;
+}
+
+.guiche-item {
+    background: #27ae60; /* Fundo verde do guichê */
+    color: white; /* Cor do texto do guichê */
+    font-weight: bold;
+    font-size: 1.2rem;
+    border-radius: 15px;
+    padding: 15px;
+    margin: 12px 0;
+    box-shadow: 0px 3px 6px rgba(0,0,0,0.1);
+}
+
+.guiche-item h3 {
+    color: white;
+    margin-bottom: 15px;
+    font-size: clamp(1.2rem, 2.2vw, 2.8rem);;
+}
+
+/* Senha igual a fila */
+.guiche_card {
+    background: white;
+    color: #27ae60;
+    border-radius: 12px;
+    padding: 10px;
+    font-weight: bold;
+    font-size: clamp(1.1rem, 2vw, 2.5rem);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.guiche-livre {
+    background-color: #f0f0f0;
+    color: #999;
+    font-size: 1.5rem; /* Aumenta o tamanho da fonte */
+    padding: 20px 40px; /* Aumenta o espaço interno */
+}
+
+/* --- ANIMAÇÃO DE CHAMADA DE SENHA --- */
+
+/* Animação do fundo do guichê */
+@keyframes flash {
+  0%, 100% {
+    background-color: #27ae60; /* Cor normal do guichê */
+    transform: scale(1);
   }
-  to {
-    transform: translateX(100%);
+  50% {
+    background-color: #ffffff; /* Cor do 'flash' (branco) */
+    transform: scale(1.05);   /* Efeito de 'pulsar' */
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
   }
 }
 
-.painel {
-  display: grid;
-  grid-template-areas:
-    "topo topo topo"
-    "esq meio dir";
-  grid-gap: 70px;
-  justify-items: center;
-  align-items: center;
+/* (NOVO) Animação APENAS da cor do texto do título (h3) */
+@keyframes flash-texto {
+  0%, 100% {
+    color: white; /* Cor normal do título */
+  }
+  50% {
+    color: #27ae60; /* Cor do título durante o flash (verde) */
+  }
 }
 
-.painel > div {
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  font-weight: bold;
-  color: #000000;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
+/* Classe principal que aplica a animação de fundo */
+.chamada-recente {
+  animation: flash 1s 2;
 }
 
-.topo {
-  grid-area: topo;
-  width: 500px;
-  height: 300px;
-  border: 3px solid black;
-  font-size: 5.5em;
-  background: linear-gradient(120deg, #c3ffff 100%, #81c784 100%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* (NOVO) Aplica a animação de texto ao h3 QUANDO o pai estiver piscando */
+.chamada-recente h3 {
+  animation: flash-texto 1s 2;
 }
 
-.guiche {
-  width: 320px;
-  height: 220px;
-  border: 3px solid black;
-  font-size: 1.2em;
-  background: linear-gradient(120deg, #c3ffff 100%, #81c784 100%);
-  position: relative;
+/* Rodapé */
+footer {
+    margin-top: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
 }
-
-.titulo {
-  position: absolute;
-  top: 10px;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  font-size: 1.2em;
-}
-
-.conteudo {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 2.5em;
-}
-.fade-out {
-  animation: fadeOut 0.7s forwards;
-}
-.fade-in {
-  animation: fadeIn 0.7s;
-}
-@keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-/*-------------Fim painel-------------*/

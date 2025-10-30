@@ -11,7 +11,7 @@ async function fetchQueue() {
     try{
         const response = await fetch(`${API_URL_FLASK}/`);
         if (!response.ok){
-            throw new error(`Erro de rede: ${response.status}'`);
+            throw new Error(`Erro de rede: ${response.status}'`);
         }
         queue = await response.json()
     }catch (error){

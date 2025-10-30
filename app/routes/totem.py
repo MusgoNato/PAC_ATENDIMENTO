@@ -33,11 +33,16 @@ class ServicoTotem():
     def set_nova_senha(self, tipo, senha_gerada):
         """Função responsável por setar uma nova senha"""
         cursor = self.db.cursor
+        if tipo == "P":
+            qual_tipo = "PRIORITARIO"
+        elif tipo == "N":
+            qual_tipo = "NORMAL"
+
 
         try:
             cursor.execute(
                 "INSERT INTO tickets (tipo, numero) VALUES (%s, %s)",
-                (tipo, senha_gerada)
+                (qual_tipo, senha_gerada)
             )
 
             self.db.conn.commit()

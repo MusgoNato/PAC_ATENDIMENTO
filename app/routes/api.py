@@ -5,6 +5,9 @@ from ..routes.totem import ServicoTotem
 import win32print
 from datetime import datetime
 from os import getenv
+import string
+import random
+import time
 import socket
 
 SUCESSO = True
@@ -20,9 +23,18 @@ PI_IP_RASPBERRY = getenv("PI_IP_RASPBERRY")
 PI_PORT_RASPBERRY = int(getenv("PI_PORT_RASPBERRY"))
 TIMEOUT_RASPBERRY = int(getenv("TIMEOUT_RASPBERRY"))
 
-# Responsavel pelo envio do ticket a ser impresso
-def print_zebra(numero, tipo):
+def gerar_senha_aleatoria(prefixo=None, tamanho=4):
+    """Gera a senha aleatoria para o usuario final"""
+    caracteres = string.ascii_letters + string.digits
+    parte_random = ''.join(random.choices(caracteres,k=tamanho))
 
+    if prefixo:
+        return f"{prefixo.upper()}{parte_random}"
+    else:
+        return f"{parte_random}"
+
+def generate_zebra_command(numero, tipo):
+    """Funcao responsavel pela geracao do comando zpl para impressao na impressora ZEBRA DESIGNER GC420d"""
     data = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
     # --- ZPL FINAL: Cortador Forçado e Comprimento Curto ---
@@ -49,30 +61,7 @@ def print_zebra(numero, tipo):
 
     ^XZ"""
 
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(TIMEOUT_RASPBERRY)
-
-        s.connect((PI_IP_RASPBERRY, PI_PORT_RASPBERRY))
-
-        s.sendall(zpl_command.encode("utf-8"))
-
-        print("Comando enviado com sucesso a impressora!")
-
-        return SUCESSO
-    
-    except socket.timeout:
-        print("Tempo limite de conexao escogtado! Raspberry ou serviço 9100 offline")
-        return FALHA
-    except ConnectionRefusedError:
-        print("Conexao recusada. Serviço SOCAT 9100 nõ esta rodando")
-        return FALHA
-    except Exception as e:
-        print(f"Erro desconhecido : {e}")
-        return FALHA
-    finally:
-        if 's' in locals() and s:
-            s.close()
+    return zpl_command.strip()
         
 # Nova função para validar a chave de API
 def validate_api_key():
@@ -80,7 +69,6 @@ def validate_api_key():
     api_key = request.headers.get('X-API-Key')
     return api_key and api_key == API_KEY_NODE_TO_FLASK
 
-# Este hook e executado ANTES de cada requisicao
 @api.before_request
 def before_request():
     """Cria uma nova conexao com o banco de dados para a requisicao atual."""
@@ -91,7 +79,6 @@ def before_request():
         print(f"Erro ao conectar ao banco de dados: {e}")
         g.db = None
 
-# Este hook e executado DEPOIS de cada requisicao
 @api.teardown_request
 def teardown_request(exception=None):
     """Fecha a conexao com o banco de dados apos a requisicao."""
@@ -106,6 +93,7 @@ def teardown_request(exception=None):
 @api.route("/", methods=["GET"])
 @login_required
 def get_queue():
+    """Responsavel pelo retorno dos dados da fila em espera"""
     if g.db is None:
         return jsonify({"error": "Falha na conexao com o banco de dados"}), 500
     try:
@@ -128,6 +116,7 @@ def get_queue():
 
 @api.route("/chamar/<int:ticket_id>", methods=["POST"])
 def chamar_cliente(ticket_id):
+    """Função responsável por chamar um cliente para atendimento"""
     if g.db is None:
         return jsonify({"error": "Falha na conexao com o banco de dados"}), 500
     try:
@@ -151,6 +140,7 @@ def chamar_cliente(ticket_id):
 # Rota para deletar o cliente
 @api.route("/<int:ticket_id>", methods=["POST"])
 def del_cliente(ticket_id):
+    """Função responsável por deletar um cliente dentro da fila de espera"""
     if not validate_api_key():
         print("Chegou na funcao para delear cliente")
         return jsonify({"error": "Chave API key inválida."}), 401
@@ -173,6 +163,7 @@ def del_cliente(ticket_id):
 @api.route("/em-atendimento", methods=["GET"])
 @login_required
 def get_cliente_em_atendimento():
+    """Função responsável por retornar o cliente em atendimento de acordo com o guiche que fez essa requisição"""
     if g.db is None:
         return jsonify({"error": "Falha na conexao com o banco de dados!"}), 500
     try:
@@ -202,6 +193,7 @@ def get_cliente_em_atendimento():
 # ----------------Totem---------------- #
 @api.route("/nova_senha", methods=["POST"])
 def gerar_senha():
+    """Responsavel pelo PROCESSO de geração de senha"""
     if not validate_api_key():
         return jsonify({"error": "Chave de API inválida!"}), 401
     
@@ -210,32 +202,35 @@ def gerar_senha():
     data = request.get_json()
     tipo = data.get("category")
 
+    # Primeiro cria a senha aleatoria
+    senha_random = gerar_senha_aleatoria(prefixo=tipo)
+
+    # Cria a senha no banco e depois devolve-a
     try:
         # Se chegou aqui, impressora está OK → gerar senha
         servico_totem = ServicoTotem(g.db)
-        senha_gerada = servico_totem.get_NovaSenha(tipo)
+        senha_gerada = servico_totem.set_nova_senha(tipo, senha_random)
+        if senha_gerada == "Erro":
+            raise Exception("Falha ao inserir senha no banco")
     except Exception as e:
         print(f"Erro ao gerar/salvar senha: {e}")
         return jsonify({"error": "Não foi possível gerar a senha no sistema."}), 500
-
-    # Agora tenta imprimir de fato
-    if not print_zebra(senha_gerada, tipo):
-        return jsonify({
-            "senha": senha_gerada,
-            "status": "erro_impressao",
-            "mensagem": "Falha na impressao, mas senha gerada normalmente, provavelmente no momento que envio a impressao deu falha ou desplugou a impressora termica"
-        }), 200
-    else:
-        # Senha gerada e impressa
-        return jsonify({
-            "senha": senha_gerada,
-            "status": "impresso"
-        }), 200
-
+    
+    # 2. GERAÇÃO DO ZPL
+    zpl_string = generate_zebra_command(senha_gerada, tipo)
+    
+    # 3. RETORNA DADOS PARA O NODE.JS
+    return jsonify({
+        "success": True,
+        "ticket_number": senha_gerada,
+        "category": tipo,
+        "zpl_data": zpl_string,
+    }), 200
 
 #------------------Painel------------------#
 @api.route("/painel", methods=["POST"])
 def get_fila_para_atendimento():
+    """Função responsável por retornar a fila para apresentação no painel"""
     if g.db is None:
         return jsonify({"error": "Falha na conexao com o banco de dados do painel!"}), 500
     

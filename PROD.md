@@ -99,6 +99,6 @@ Caso você tenha alguns erros ao tentar acessar alguma rota e retorne uma mensag
 #### Log de erro do servidor
 Se você tiver algum erro mais profundo que o log da aplicação não está cobrindo ou está vazio, vá ao log de erro do servidor, fica localizado na aba ferramentas dentro do cPanel.
 
-
-### Impressora KNUP KP-1031
-Para integração da impressora knup, é necessário entender a linguagem de programação que a própria impressora utiliza para se comunicar, TSPL. Assim sendo, o envio da impressora deve ser feito
+### Impressora Zebra Designer GC420d
+A impressora se comunica com o Raspberry de forma local, pois está conectada a ele, assim sendo o script dentro do raspberry escutará o servidor e em caso de falha de conexão ou algum erro, tentará se conectar novamente. A impressora antes de conectar tem de ser configurada de modo a usar o cortador, o tamanho do papel que irá sair e o tipo do papel que está dentro da impressora. A impressora utilizada no projeto está configurada com etiqueta contínua, tamanho do papel ~20x40 e utilizando o modo cortador.
+Quaisquer comandos enviados a impressora devem ser enviados via ZPL (Zebra Language Programming), assim a impressora entenderá o comando enviado. Lembre-se também de configurar a impressora somente para entender a linguagem ZPL II (utilizada neste projeto), essas configurações podem ser acessadas instalando o Zebra Setup Utilities.

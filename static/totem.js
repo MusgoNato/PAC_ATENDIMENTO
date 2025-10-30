@@ -1,50 +1,61 @@
 /*-------------Totem do usuario-------------*/
-async function takeTicket(category){
-  try {
-    const res = await fetch(`${API_URL_NODE}/nova_senha`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({category})
-    });
+async function takeTicket(category) {
+    try {
+        const res = await fetch(`${API_URL_NODE}/nova_senha`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ category })
+        });
 
-    if(!res.ok){
-      const errorData = await res.json().catch(() => ({error: 'Erro desconhecido'}));
-      alert(`Ocorreu um erro no servidor: ${errorData.error || 'Código de status: ' + res.status}`);
-      console.error("Erro na requisição de geração de senha!", res.status, errorData);
-      return;
+        // =======================================================
+        // TRATAMENTO DE ERROS HTTP (Status != 200)
+        // =======================================================
+        if (!res.ok) {
+            // O Node.js enviará a mensagem de erro no corpo JSON
+            const errorData = await res.json().catch(() => ({ message: 'Erro desconhecido' }));
+            
+            // 503 SERVICE UNAVAILABLE (Impressora Offline)
+            if (res.status === 503) {
+                console.warn("Impressora offline, senha não gerada (Erro 503).");
+                showCustomAlert(`🚨 A impressora está offline!\nPor favor, aguarde o suporte.`, 8000);
+                return;
+            }
+
+            // 500 INTERNAL SERVER ERROR (Falha crítica no Flask/DB)
+            if (res.status === 500) {
+                console.error("Erro crítico na requisição de geração de senha!", res.status, errorData);
+                alert(`Ocorreu um erro no servidor: ${errorData.message || 'Código de status: ' + res.status}`);
+                return;
+            }
+
+            // Outros erros
+            alert(`Ocorreu um erro inesperado: ${errorData.message || 'Código de status: ' + res.status}`);
+            console.error("Erro inesperado na requisição:", res.status, errorData);
+            return;
+        }
+
+        // =======================================================
+        // TRATAMENTO DE SUCESSO (Status 200 OK)
+        // =======================================================
+        
+        const data = await res.json();
+        const ticketNumber = data.ticket_number; // Usa o número retornado pelo Flask
+
+        // 200 OK significa que:
+        // 1. A impressora estava online.
+        // 2. O ticket foi criado no Flask.
+        // 3. O ZPL foi enviado para o Raspberry Pi.
+        
+        console.log("Senha gerada e enviada para impressão:", ticketNumber);
+        
+        // Mensagem de sucesso simples
+        showCustomAlert(`Sua senha é ${ticketNumber}.\nAguarde ser chamado!`, 5000);
+
+    } catch (err) {
+        // Falha de rede (ex: servidor Node.js totalmente inacessível)
+        console.error("Erro na comunicação com o servidor: ", err);
+        showCustomAlert(`❌ Falha de comunicação com o servidor.`, 5000);
     }
-
-    const data = await res.json();
-
-    // Impressora está offline antes de gerar senha
-    if(data.status === "erro_impressao" && !data.senha){
-      console.warn("Impressora offline, senha não gerada!");
-      showCustomAlert(`🚨 A impressora está offline!\nPor favor, aguarde o suporte.`, 8000);
-      return;
-    }
-
-    // Impressão OK
-    if(data.status === "impresso" && data.senha){
-      console.log("Senha gerada e impressa:", data.senha);
-      showCustomAlert(`Sua senha é ${data.senha}. Aguarde ser chamado!`, 5000);
-      return;
-    }
-
-    // Impressora falhou depois de gerar a senha
-    if(data.status === "erro_impressao" && data.senha){
-      console.warn("Falha na impressão. Exibindo senha na tela:", data.senha);
-      showCustomAlert(`⚠️ Impressora falhou!\nAnote sua senha:\n\nSENHA: ${data.senha}`, 8000);
-      return;
-    }
-
-    // Caso inesperado
-    console.log("Resposta inesperada:", data);
-    showCustomAlert(`Não foi possível gerar a senha. Tente novamente.`, 5000);
-
-  } catch (err) {
-    console.error("Erro na comunicação com o servidor: ", err);
-    showCustomAlert(`❌ Falha de comunicação com o servidor.`, 5000);
-  }
 }
 
 // Alerta customizado

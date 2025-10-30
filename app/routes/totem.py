@@ -30,39 +30,20 @@ class ServicoTotem():
         """
         self.db = db_connection
 
-    def get_NovaSenha(self, tipo):
+    def set_nova_senha(self, tipo, senha_gerada):
+        """Função responsável por setar uma nova senha"""
         cursor = self.db.cursor
-        match tipo:
-            case "N":
-                tipo_db = 'NORMAL'
-            case "P":
-                tipo_db = 'PRIORITARIO'
-            case _:
-                return "Erro: Tipo de ticket invalido"
-        try:
-            # Insere a nova senha no banco de dados.
-            cursor.execute(
-                "INSERT INTO tickets (tipo) VALUES (%s)",
-                (tipo_db,)
-            )
-            
-            # Pega o ID gerado pela inserção.
-            novo_id = cursor.lastrowid
 
-            # Confirma a transação.
-            self.db.conn.commit()
-            
-            # Formata a senha com base no tipo e no ID.
-            nova_senha_formatada = f"{tipo}{novo_id:03d}"
-            
-            # 4. Atualiza o registro com a senha formatada.
+        try:
             cursor.execute(
-                "UPDATE tickets SET numero = %s WHERE id = %s",
-                (nova_senha_formatada, novo_id)
+                "INSERT INTO tickets (tipo, numero) VALUES (%s, %s)",
+                (tipo, senha_gerada)
             )
+
             self.db.conn.commit()
-            
-            return nova_senha_formatada
+
+            # Retorna a senha gerada, agora cadastrada no banco
+            return senha_gerada
 
         except Exception as e:
             # Em caso de erro, desfaz a operação e loga o erro.

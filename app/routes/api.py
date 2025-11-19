@@ -197,35 +197,51 @@ def gerar_senha():
     if not validate_api_key():
         return jsonify({"error": "Chave de API inválida!"}), 401
     
-    if g.db is None:
-        return jsonify({"error": "Falha na conexao com o banco de dados"}, 500)
     data = request.get_json()
     tipo = data.get("category")
 
-    # Primeiro cria a senha aleatoria
+    # Gera a senha aleatoria
     senha_random = gerar_senha_aleatoria(prefixo=tipo)
+    
+    # 2. GERAÇÃO DO ZPL
+    zpl_string = generate_zebra_command(senha_random, tipo)
+    
+    # 3. RETORNA DADOS PARA O NODE.JS
+    return jsonify({
+        "success": True,
+        "ticket_number": senha_random,
+        "category": tipo,
+        "zpl_data": zpl_string,
+    }), 200
+
+# Para gravar ao banco a senha
+@api.route("/wr_senha_bd", methods=["POST"])
+def gravar_senha_no_banco():
+
+    if not validate_api_key():
+        return jsonify({"error": "Chave de API inválida!"}), 401
+    
+    if g.db is None:
+        return jsonify({"error": "Falha na conexao com o banco de dados"}, 500)
+    
+    data = request.get_json()
+    tipo = data.get("category")
+    senha = data.get("ticket_number")
+
+    if not senha or not tipo:
+        return jsonify({"error": "Dados insuficientes"}), 400
 
     # Cria a senha no banco e depois devolve-a
     try:
         # Se chegou aqui, impressora está OK → gerar senha
         servico_totem = ServicoTotem(g.db)
-        senha_gerada = servico_totem.set_nova_senha(tipo, senha_random)
+        senha_gerada = servico_totem.set_nova_senha(tipo, senha)
         if senha_gerada == "Erro":
             raise Exception("Falha ao inserir senha no banco")
     except Exception as e:
-        print(f"Erro ao gerar/salvar senha: {e}")
         return jsonify({"error": "Não foi possível gerar a senha no sistema."}), 500
     
-    # 2. GERAÇÃO DO ZPL
-    zpl_string = generate_zebra_command(senha_gerada, tipo)
-    
-    # 3. RETORNA DADOS PARA O NODE.JS
-    return jsonify({
-        "success": True,
-        "ticket_number": senha_gerada,
-        "category": tipo,
-        "zpl_data": zpl_string,
-    }), 200
+    return jsonify({"success": True, "ticket_number": senha}), 200
 
 #------------------Painel------------------#
 @api.route("/painel", methods=["POST"])
@@ -255,10 +271,10 @@ def get_fila_para_atendimento():
 
         # Retorna os dados da fila
         fila_db = cursor.fetchall()
+
         fila_formatada = [{'id': item['id'], 'numero': item['numero'], 'tipo': item['tipo']}
             for item in fila_db
         ]
-
 
         # Guiches em atendimento
         cursor.execute("SELECT id, numero, tipo, guiche_nome FROM tickets WHERE status = 'CHAMADO'")

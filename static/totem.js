@@ -1,5 +1,6 @@
 /*-------------Totem do usuario-------------*/
 async function takeTicket(category) {
+    console.log(`CAtegoy enviado ao take ticket : ${category}`);
     try {
         const res = await fetch(`${API_URL_NODE}/nova_senha`, {
             method: 'POST',
@@ -40,6 +41,9 @@ async function takeTicket(category) {
         
         const data = await res.json();
         const ticketNumber = data.ticket_number; // Usa o número retornado pelo Flask
+        console.log(data);
+
+        // TODO (ESTA RETORNANDO UMA MENSAGEM, DEVERIA RETORNAR O NUMERO DO TICKET)
 
         // 200 OK significa que:
         // 1. A impressora estava online.

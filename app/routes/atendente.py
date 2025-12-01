@@ -12,9 +12,8 @@ def before_request():
     """Cria uma nova conexao com o banco de dados para a requisição atual"""
     try:
         g.db = ServicoBancoDeDados(*ServicoBancoDeDados._ServicoBancoDeDados__params)
-        print("Conexao com o banco de dados aberta com sucesso!")
     except Exception as e:
-        print(f"Erro ao conectar ao banco de dados {e}")
+        print(f"Erro ao conectar ao banco de dados {e}", flush=True)
         g.db = None
 
 @atendente.teardown_request
@@ -23,7 +22,6 @@ def teardown_request(exception=None):
     db = g.pop("db", None)
     if db is not None:
         db.conn.close()
-        print("Conexao com o banco de dados fechada com sucesso.")
 
 # Home do atendente (Painel do atendente)
 @atendente.route("/login", methods=["GET", "POST"])
@@ -138,5 +136,5 @@ def chamar_senha(ticket_id):
     except Exception as e:
         # Se qualquer passo falhar, desfaz todas as operações para manter o banco consistente.
         g.db.conn.rollback()
-        print(f"ERRO CRÍTICO ao chamar senha: {e}")
+        print(f"ERRO CRÍTICO ao chamar senha: {e}", flush=True)
         return jsonify({"success": False, "error": "Ocorreu um erro interno ao processar a chamada"}), 500

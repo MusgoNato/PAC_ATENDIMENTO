@@ -24,7 +24,7 @@ async function del_client(ticket_id) {
     try{
         const response = await fetch(`${API_URL_NODE}/remover/${ticket_id}`, {method: 'POST'});
         if (!response){
-            throw new Error(`Erro de rede ao remover cliente : ${ticket_id}`)
+            throw new Error(`Erro de rede ao remover a senha : ${ticket_id}`)
         }
         const result = await response.json();
     }catch (error){
@@ -48,7 +48,7 @@ async function call_client(clienteSelecionado) {
 
         // Verificacao do status da resposta da requisicao
         if (!response.ok){
-            throw new Error(`Erro de rede ao chamar cliente : ${ticket_id}`)
+            throw new Error(`Erro de rede ao chamar a senha : ${ticket_id}`)
         }
 
         // Se a requisição correr bem, a mudança é feita na fila local
@@ -62,10 +62,10 @@ async function call_client(clienteSelecionado) {
         atualizarContagemDaFila();
 
         // Chama o proximo cliente
-        alert(`CLiente ${clienteSelecionado.numero} chamado para atendimento!`);
+        alertPersonalizado(`Senha ${clienteSelecionado.numero} chamado para atendimento!`);
     }catch (error){
-        console.error("Falha ao chamar cliente: ", error);
-        alert("Falha ao chamar cliente. Tente novamente");
+        console.error("Falha ao chamar a senha: ", error);
+        alertPersonalizado("Falha ao chamar senha. Tente novamente");
     }
 }
 
@@ -74,7 +74,7 @@ async function verificar_cliente_em_atendimento() {
     try{
         const response = await fetch(`${API_URL_FLASK}/em-atendimento`);
         if (!response.ok){
-            throw new Error(`Erro de rede, nao foi possivel pegar o cliente em atendimento: ${response.status}`);
+            throw new Error(`Erro de rede, nao foi possivel carregar a senha em atendimento: ${response.status}`);
         }
 
         const customer = await response.json();
@@ -84,7 +84,7 @@ async function verificar_cliente_em_atendimento() {
             currentCustomer = null;
         }
     }catch (error){
-        console.error("Error: erro ao carregar cliente em atendimento : ", error);
+        console.error("Erro ao carregar cliente em atendimento : ", error);
     }
 }
 
@@ -108,7 +108,7 @@ function renderizarClienteEmAtendimento() {
         container.className = 'current-customer';
         container.innerHTML = `
             <div class="empty-state">
-                <h3>Nenhum cliente em atendimento</h3>
+                <h3>Nenhuma senha em atendimento</h3>
                 <p>Chame o próximo da fila para iniciar</p>
             </div>
         `;
@@ -134,7 +134,7 @@ function renderizarFila(fila, elementId, tipoFila) {
     if (fila.length === 0) {
         filaLista.innerHTML = `
             <div class="empty-state">
-                <p>Aguardando novos clientes</p>
+                <p>Aguardando novas senhas</p>
             </div>
         `;
         return;
@@ -168,50 +168,56 @@ function chamarCliente(tipoFila, index = 0) {
     const fila = tipoFila === "PRIORITARIO" ? prioritarios : normais;
 
     if (fila.length === 0 || currentCustomer) {
-        alert(currentCustomer ? 'Finalize o atendimento atual primeiro' : `Fila ${tipoFila} vazia`);
+        alertPersonalizado(currentCustomer ? 'Finalize o atendimento atual primeiro' : `Fila ${tipoFila} vazia`);
         return;
     }
 
     const clienteSelecionado = fila[index];
+    confirmPersonalizado(`Deseja atender ${clienteSelecionado.numero}?`).then(resposta => {
+        if (resposta) {
+            // Somente chama a funcao responsavel pela modificacao local e remota da fila
+            call_client(clienteSelecionado);
+        }
+    });
 
-    if (confirm(`Deseja atender ${clienteSelecionado.numero}?`)) {
-        // Somente chama a funcao responsavel pela modificacao local e remota da fila
-        call_client(clienteSelecionado)
-
-    }
+    
 }
 
 // Remove cliente da fila de espera
 function removerClienteDaFila(id_cliente, senha_cliente) {
-    if (confirm(`Deseja realmente remover o cliente '${senha_cliente}' da fila de espera?`)) {
-        
-        // Remove do array principal
-        queue = queue.filter(c => c.id !== id_cliente);
-        del_client(id_cliente);
-        alert(`Cliente removido: ID: ${id_cliente}, SENHA: ${senha_cliente}`);
-        atualizarContagemDaFila();
-        renderizarFilas();
-    }
+    confirmPersonalizado(`Deseja remover a senha '${senha_cliente}' da fila de espera?`).then(resposta => {
+        if (resposta) {
+            // Remove do array principal
+            queue = queue.filter(c => c.id !== id_cliente);
+            del_client(id_cliente);
+            alertPersonalizado(`Senha ${senha_cliente} removida com sucesso!`);
+            atualizarContagemDaFila();
+            renderizarFilas();
+        }
+    });
+
+
 }
 
 // Finaliza o atendimento do cliente atual
 function finalizarAtendimento() {
     if (!currentCustomer) return;
     
-    if(confirm("Deseja finalizar o atendimento?")){
-        alert(`Atendimento de ${currentCustomer.numero} finalizado com sucesso`);
-        del_client(currentCustomer.id);
+    confirmPersonalizado(`Deseja finalizar o atendimento?`).then(resposta => {
+        if(resposta){
+            alertPersonalizado('Atendimento finalizado com sucesso!');
+            del_client(currentCustomer.id);
 
-        currentCustomer = null;
+            currentCustomer = null;
 
-        renderizarClienteEmAtendimento();
-        renderizarFilas();
-        atualizarContagemDaFila();
-    }
-    else{
-        return;
-    }
-
+            renderizarClienteEmAtendimento();
+            renderizarFilas();
+            atualizarContagemDaFila();
+        }else{
+            return;
+        }
+            
+    });
 }
 
 // Renderiza todas as filas
@@ -220,6 +226,100 @@ function renderizarFilas() {
     renderizarFila(prioritarios, "fila-prioritarios", "PRIORITARIO");
     renderizarFila(normais, "fila-normais", "NORMAL");
 }
+
+function confirmPersonalizado(mensagem) {
+    return new Promise((resolve) => {
+
+        // Cria o overlay
+        const overlay = document.createElement("div");
+        overlay.style = `
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+        `;
+
+        // Cria o modal
+        const box = document.createElement("div");
+        box.style = `
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 320px;
+            text-align: center;
+            font-family: Arial;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        `;
+
+        box.innerHTML = `
+            <p style="font-size: 18px; margin-bottom: 20px;">${mensagem}</p>
+            <button id="btnConfirmSim" style="padding: 10px 20px; margin-right: 10px;">Sim</button>
+            <button id="btnConfirmNao" style="padding: 10px 20px;">Não</button>
+        `;
+
+        overlay.appendChild(box);
+        document.body.appendChild(overlay);
+
+        // Eventos
+        document.getElementById("btnConfirmSim").onclick = () => {
+            overlay.remove();
+            resolve(true);
+        };
+
+        document.getElementById("btnConfirmNao").onclick = () => {
+            overlay.remove();
+            resolve(false);
+        };
+    });
+}
+
+function alertPersonalizado(mensagem) {
+    return new Promise((resolve) => {
+
+        // Criar overlay
+        const overlay = document.createElement("div");
+        overlay.style = `
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+        `;
+
+        // Criar caixa
+        const box = document.createElement("div");
+        box.style = `
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 320px;
+            text-align: center;
+            font-family: Arial;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        `;
+
+        box.innerHTML = `
+            <p style="font-size: 18px; margin-bottom: 20px;">${mensagem}</p>
+            <button id="alertOkBtn" style="padding: 10px 25px; font-size: 15px;">OK</button>
+        `;
+
+        overlay.appendChild(box);
+        document.body.appendChild(overlay);
+
+        // Botão OK
+        document.getElementById("alertOkBtn").onclick = () => {
+            overlay.remove();
+            resolve(); // Não retorna nada, igual o alert nativo
+        };
+    });
+}
+
+
 
 // Inicialização
 async function init() {

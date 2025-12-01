@@ -2,13 +2,10 @@ from flask import Blueprint, jsonify, g, request
 from flask_login import login_required, current_user
 from ..database.db import ServicoBancoDeDados
 from ..routes.totem import ServicoTotem
-import win32print
 from datetime import datetime
 from os import getenv
 import string
 import random
-import time
-import socket
 
 SUCESSO = True
 FALHA = False
@@ -17,11 +14,6 @@ api = Blueprint("api", __name__)
 
 API_KEY_NODE_TO_FLASK = getenv("API_KEY_NODE_TO_FLASK")
 PRINTER_NAME_IN_LOCAL_RASPBERRY = "ZDesigner GC420d"
-
-# Configuracoes do IP, porta e tempo para conexao via socket com o raspberry local
-PI_IP_RASPBERRY = getenv("PI_IP_RASPBERRY")
-PI_PORT_RASPBERRY = int(getenv("PI_PORT_RASPBERRY"))
-TIMEOUT_RASPBERRY = int(getenv("TIMEOUT_RASPBERRY"))
 
 def gerar_senha_aleatoria(prefixo=None, tamanho=4):
     """Gera a senha aleatoria para o usuario final"""
@@ -74,9 +66,8 @@ def before_request():
     """Cria uma nova conexao com o banco de dados para a requisicao atual."""
     try:
         g.db = ServicoBancoDeDados(*ServicoBancoDeDados._ServicoBancoDeDados__params)
-        print("Conexao com o banco de dados aberta com sucesso!")
     except Exception as e:
-        print(f"Erro ao conectar ao banco de dados: {e}")
+        print(f"Erro ao conectar ao banco de dados: {e}", flush=True)
         g.db = None
 
 @api.teardown_request
@@ -85,7 +76,6 @@ def teardown_request(exception=None):
     db = g.pop("db", None)
     if db is not None:
         db.conn.close()
-        print("Conexao com o banco de dados fechada com sucesso!")
 
 #------------------Atendente------------------#
 
@@ -110,7 +100,7 @@ def get_queue():
         return jsonify(fila_formatada)
     
     except Exception as e:
-        print(f"Falha ao buscar a fila de espera : {e}")
+        print(f"Falha ao buscar a fila de espera : {e}", flush=True)
         return jsonify({"error": "Falha ao buscar a fila de espera"})
 
 
@@ -132,9 +122,9 @@ def chamar_cliente(ticket_id):
         return jsonify({"message" : f"ticket {ticket_id} chamado com sucesso."}), 200
     
     except Exception as e:
-        print(f"Falha ao chamar cliente : {e}")
+        print(f"Falha ao chamar a senha : {e}", flush=True)
         g.db.conn.rollback()
-        return jsonify({"error": "Falha ao chamar cliente"}), 500
+        return jsonify({"error": "Falha ao chamar a senha"}), 500
 
 
 # Rota para deletar o cliente
@@ -142,7 +132,6 @@ def chamar_cliente(ticket_id):
 def del_cliente(ticket_id):
     """Função responsável por deletar um cliente dentro da fila de espera"""
     if not validate_api_key():
-        print("Chegou na funcao para delear cliente")
         return jsonify({"error": "Chave API key inválida."}), 401
     
     if g.db is None:
@@ -155,9 +144,9 @@ def del_cliente(ticket_id):
         return jsonify({"message" : f"ticket {ticket_id} finalizado com sucesso."}), 200
     
     except Exception as e:
-        print(f"Falha ao deletar cliente : {e}")
+        print(f"Falha ao deletar a senha : {e}", flush=True)
         g.db.rollback()
-        return jsonify({"error": "Falha ao deletar cliente"}), 500
+        return jsonify({"error": "Falha ao deletar a senha"}), 500
 
 
 @api.route("/em-atendimento", methods=["GET"])
@@ -183,11 +172,11 @@ def get_cliente_em_atendimento():
                 'tipo': ticket['tipo']
             }), 200
         else:
-            return jsonify({"message" : f"Nenhum cliente em atendimento."}, 200)
+            return jsonify({"message" : f"Nenhuma senha em atendimento."}, 200)
 
     except Exception as e:
-        print(f"Falha ao carregar cliente em atendimento : {e}")
-        return jsonify({"error": "Falha ao carregar cliente em atendimento"}, 500)
+        print(f"Falha ao carregar a senha em atendimento : {e}", flush=True)
+        return jsonify({"error": "Falha ao carregar a senha em atendimento"}, 500)
 
 
 # ----------------Totem---------------- #

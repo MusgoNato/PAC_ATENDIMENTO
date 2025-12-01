@@ -53,8 +53,8 @@ class ServicoTotem():
         except Exception as e:
             # Em caso de erro, desfaz a operação e loga o erro.
             self.db.conn.rollback()
-            print(f"Erro ao inserir senha: {e}")
-            return "Erro"
+            print(f"Erro ao inserir senha: {e}", flush=True)
+            return "Erro ao inserir a senha no banco de dados"
 
 
 # Home do usuario (Totem)

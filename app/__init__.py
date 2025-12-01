@@ -21,7 +21,6 @@ except Exception as e:
 
 # Define o caminho para a pasta principal do projeto
 basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-print(basedir)
 
 # Inicializa objeto da aplicacao
 app = Flask(__name__, template_folder=os.path.join(basedir, 'templates'), static_folder=os.path.join(basedir, 'static'))

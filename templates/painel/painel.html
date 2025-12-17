@@ -13,26 +13,32 @@
     </script>
 </head>
 <body>
-    <h1>PAC Posto de Atendimento ao Contribuinte</h1>
+    <h1>Posto de Atendimento ao Contribuinte (PAC)</h1>
 
-    <div class="main-content">
-        <div class="fila">
-            <p>Fila</p>
+    <!-- CONTAINER SUPERIOR -->
+    <div class="container-painel">
+        <!-- FILA -->
+        <div class="fila_container_painel">
             <div id="fila-de-espera"></div>
         </div>
 
+        <!-- RELÓGIO -->
         <div class="relogio-container">
-            <div class="cidade">Rio Brilhante</div>
-            <div class="relogio" id="relogio">00:00:00</div>
-            <div class="data" id="date"></div>
+            <div id="relogio"></div>
+            <span id="date"></span>
         </div>
-
-        <div id="guiches_atendimento" class="guiches">
-            </div>
     </div>
-  
-    <footer>RIO BRILHANTE-MS</footer>
 
-    <script src="{{url_for('static', filename='painel.js')}}"></script>
+    <!-- GUICHÊS -->
+    <div id="guiches_atendimento" class="guiches"></div>
+
+    <footer id="footer_painel">
+        <!-- Dale meu -->
+        <span>Develop by <a href="https://github.com/MusgoNato">GTIC <a href="https://www.instagram.com/arthur_z_pablos/">💻</a></a>. RIO BRILHANTE-MS</span>
+
+    </footer>
+
+    <script src="{{ url_for('static', filename='painel.js') }}"></script>
 </body>
+
 </html>

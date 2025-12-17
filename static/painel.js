@@ -67,8 +67,7 @@ async function fetchAndRenderQueue() {
                     guicheItem.innerHTML = `
                         <h3>${atendimentoAtual.guiche_nome}</h3>
                         <div class="guiche_card">
-                            Senha: <span class="senha-numero">${senhaAtual}</span>
-                            ${atendimentoAtual.tipo ? `(${atendimentoAtual.tipo})` : ''}
+                            <span class="senha-numero">${senhaAtual}${atendimentoAtual.tipo ? `(${atendimentoAtual.tipo})` : ''}</span>   
                         </div>
                     `;
                 } else {

@@ -1,6 +1,10 @@
 // Variável para guardar o estado anterior dos atendimentos
 let atendimentosAnteriores = {};
 
+// Instancia o audio de chamado
+const audioChamada = new Audio('/static/assets/som.wav');
+audioChamada.load();
+
 const socket = io(URL_WEBSOCKET);
 
 // Função para buscar e renderizar a fila de espera e guichês
@@ -62,6 +66,7 @@ async function fetchAndRenderQueue() {
 
                     if (!senhaAnterior || senhaAnterior !== senhaAtual) {
                         guicheItem.classList.add('chamada-recente');
+                        audioChamada.play().catch(err => console.log("Erro ao tocar o som de chamado! ", err));
                     }
 
                     guicheItem.innerHTML = `

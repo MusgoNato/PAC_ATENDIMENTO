@@ -67,8 +67,6 @@ def logout():
     logout_user()
     return redirect(url_for('atendente.login'))
 
-# COLE ESTE CÓDIGO NO FINAL DO SEU ARQUIVO atendente.py
-
 @atendente.route("/chamar/<int:ticket_id>", methods=["POST"])
 @login_required
 def chamar_senha(ticket_id):

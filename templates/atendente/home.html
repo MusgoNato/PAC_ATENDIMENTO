@@ -22,6 +22,7 @@
     <header class="headerAtendente">
         <h1>Sistema de Atendimento <p>{{nome_guiche}}</p></h1>
         <div class="headerAtendente-info">
+            <a class="logout-user" href="{{ url_for('atendente.logout') }}" onclick="confirmPersonalizado('Deseja sair?')">Sair</a>
             <span id="current-time">--:--:--</span>
             <span>Fila: <strong id="queue-count">0</strong></span>
         </div>
@@ -56,6 +57,6 @@
         </div>
     </div>
 
-    <script src="{{url_for('static', filename='atendente.js')}}"></script>
+    <script type="module" src="{{url_for('static', filename='atendente.js')}}"></script>
 </body>
 </html>

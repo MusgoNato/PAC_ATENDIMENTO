@@ -26,11 +26,11 @@ def teardown_request(exception=None):
 class ServicoTotem():
     def __init__(self, db_connection):
         """
-        Conexao com o banco de dados (Single Ton)
+        Conexao com o banco de dados
         """
         self.db = db_connection
 
-    def set_nova_senha(self, tipo, senha_gerada):
+    def get_nova_senha(self, tipo):
         """Função responsável por setar uma nova senha"""
         cursor = self.db.cursor
         if tipo == "P":
@@ -41,20 +41,31 @@ class ServicoTotem():
 
         try:
             cursor.execute(
-                "INSERT INTO tickets (tipo, numero) VALUES (%s, %s)",
-                (qual_tipo, senha_gerada)
+                "INSERT INTO tickets (tipo) VALUES (%s)",
+                (qual_tipo)
+            )
+
+            novo_id = cursor.lastrowid
+
+            self.db.conn.commit()
+
+            nova_senha_formatada = f"{tipo}{novo_id:03d}"
+
+            cursor.execute(
+                "UPDATE tickets SET numero = %s WHERE id = %s",
+                (nova_senha_formatada, novo_id)
             )
 
             self.db.conn.commit()
 
             # Retorna a senha gerada, agora cadastrada no banco
-            return senha_gerada
+            return nova_senha_formatada
 
         except Exception as e:
             # Em caso de erro, desfaz a operação e loga o erro.
             self.db.conn.rollback()
             print(f"Erro ao inserir senha: {e}", flush=True)
-            return "Erro ao inserir a senha no banco de dados"
+            return "ErroBD"
 
 
 # Home do usuario (Totem)

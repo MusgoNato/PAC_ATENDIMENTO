@@ -15,15 +15,15 @@ api = Blueprint("api", __name__)
 API_KEY_NODE_TO_FLASK = getenv("API_KEY_NODE_TO_FLASK")
 PRINTER_NAME_IN_LOCAL_RASPBERRY = "ZDesigner GC420d"
 
-def gerar_senha_aleatoria(prefixo=None, tamanho=4):
-    """Gera a senha aleatoria para o usuario final"""
-    caracteres = string.ascii_letters + string.digits
-    parte_random = ''.join(random.choices(caracteres,k=tamanho))
+# def gerar_senha_aleatoria(prefixo=None, tamanho=4):
+#     """Gera a senha aleatoria para o usuario final"""
+#     caracteres = string.ascii_letters + string.digits
+#     parte_random = ''.join(random.choices(caracteres,k=tamanho))
 
-    if prefixo:
-        return f"{prefixo.upper()}{parte_random}"
-    else:
-        return f"{parte_random}"
+#     if prefixo:
+#         return f"{prefixo.upper()}{parte_random}"
+#     else:
+#         return f"{parte_random}"
 
 def generate_zebra_command(numero, tipo):
     """Funcao responsavel pela geracao do comando zpl para impressao na impressora ZEBRA DESIGNER GC420d"""
@@ -182,55 +182,36 @@ def get_cliente_em_atendimento():
 # ----------------Totem---------------- #
 @api.route("/nova_senha", methods=["POST"])
 def gerar_senha():
-    """Responsavel pelo PROCESSO de geração de senha"""
-    if not validate_api_key():
-        return jsonify({"error": "Chave de API inválida!"}), 401
-    
-    data = request.get_json()
-    tipo = data.get("category")
-
-    # Gera a senha aleatoria
-    senha_random = gerar_senha_aleatoria(prefixo=tipo)
-    
-    # 2. GERAÇÃO DO ZPL
-    zpl_string = generate_zebra_command(senha_random, tipo)
-    
-    # 3. RETORNA DADOS PARA O NODE.JS
-    return jsonify({
-        "success": True,
-        "ticket_number": senha_random,
-        "category": tipo,
-        "zpl_data": zpl_string,
-    }), 200
-
-# Para gravar ao banco a senha
-@api.route("/wr_senha_bd", methods=["POST"])
-def gravar_senha_no_banco():
-
+    """Responsavel pelo processo de geração de senha"""
     if not validate_api_key():
         return jsonify({"error": "Chave de API inválida!"}), 401
     
     if g.db is None:
-        return jsonify({"error": "Falha na conexao com o banco de dados"}, 500)
+        return jsonify({"error": "Falha na coexão com o banco"}), 500
     
     data = request.get_json()
     tipo = data.get("category")
-    senha = data.get("ticket_number")
-
-    if not senha or not tipo:
-        return jsonify({"error": "Dados insuficientes"}), 400
-
-    # Cria a senha no banco e depois devolve-a
+    
     try:
-        # Se chegou aqui, impressora está OK → gerar senha
         servico_totem = ServicoTotem(g.db)
-        senha_gerada = servico_totem.set_nova_senha(tipo, senha)
-        if senha_gerada == "Erro":
+        senha_gerada = servico_totem.get_nova_senha(tipo)
+        if senha_gerada == "ErroBD":
             raise Exception("Falha ao inserir senha no banco")
+        
+        # A senha vem do banco ja formatada no padrão {tipo}{numero},
+        # Somente crio o codigo ZPL para impressao
+        zpl_string = generate_zebra_command(senha_gerada, tipo)
+    
+        # 3. RETORNA DADOS PARA O NODE.JS
+        return jsonify({
+            "success": True,
+            "ticket_number": senha_gerada,
+            "category": tipo,
+            "zpl_data": zpl_string,
+        }), 200
     except Exception as e:
         return jsonify({"error": "Não foi possível gerar a senha no sistema."}), 500
-    
-    return jsonify({"success": True, "ticket_number": senha}), 200
+
 
 #------------------Painel------------------#
 @api.route("/painel", methods=["POST"])
